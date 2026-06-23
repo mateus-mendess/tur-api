@@ -1,6 +1,6 @@
 package com.m2.tur.infra.security.jwt;
 
-import com.m2.tur.infra.security.user.UserAuthenticated;
+import com.m2.tur.infra.security.user.UserAuth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +21,7 @@ public class JwtService {
         Instant now = Instant.now();
         long expired = 10800L;
 
-        UserAuthenticated userAuthenticated = (UserAuthenticated) authentication.getPrincipal();
+        UserAuth userAuth = (UserAuth) authentication.getPrincipal();
 
         String scopes = authentication.getAuthorities()
                 .stream()
@@ -32,7 +32,7 @@ public class JwtService {
                 .issuer("Tur.exe")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expired))
-                .subject(userAuthenticated.getId().toString())
+                .subject(userAuth.getId().toString())
                 .claim("scope", scopes)
                 .build();
 

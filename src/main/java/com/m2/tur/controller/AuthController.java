@@ -2,7 +2,7 @@ package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.request.AuthenticationRequest;
 import com.m2.tur.model.dto.response.AuthenticationResponse;
-import com.m2.tur.service.AuthenticationService;
+import com.m2.tur.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final AuthenticationService authenticationService;
+    private final AuthService authenticationService;
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }

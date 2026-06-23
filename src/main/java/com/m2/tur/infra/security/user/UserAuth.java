@@ -1,7 +1,6 @@
 package com.m2.tur.infra.security.user;
 
 import com.m2.tur.model.entity.User;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class UserAuthenticated implements UserDetails {
+public class UserAuth implements UserDetails {
     private final User user;
 
     public UUID getId() {
