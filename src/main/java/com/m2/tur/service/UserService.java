@@ -7,6 +7,7 @@ import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -14,12 +15,14 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
     public void save(UserRequest request) {
         validate(request);
 
         User user = userMapper.toEntity(request);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(user);
     }
