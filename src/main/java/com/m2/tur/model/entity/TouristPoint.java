@@ -7,40 +7,39 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
+@Table(name = "tourist_points")
 @Entity
-public class User {
+public class TouristPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String email;
+    private String name;
 
-    private String password;
+    private String description;
+
+    private String accessibilityInfo;
+
+    private Boolean hasAccessibility;
 
     private Boolean active;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user")
-    private Set<Category> categories;
-
-    @OneToMany(mappedBy = "user")
-    private Set<TouristPoint> touristPoints;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @PrePersist
-    private void prePersist() {
+    public void prePersist() {
         this.active = true;
         this.createdAt = LocalDateTime.now();
     }
