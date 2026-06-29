@@ -1,9 +1,11 @@
 package com.m2.tur.model.repository;
 
-import com.m2.tur.model.entity.State;
+import com.m2.tur.model.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface StateRepository extends JpaRepository<State,Long> {
+public interface AddressRepository extends JpaRepository<Address, UUID> {
 }

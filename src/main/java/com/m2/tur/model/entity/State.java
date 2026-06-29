@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,6 +25,9 @@ public class State {
     private String abbreviation;
 
     private LocalDate createdAt;
+
+    @OneToMany(mappedBy = "state")
+    private Set<Address> addresses;
 
     @PrePersist
     public void prePersist() {

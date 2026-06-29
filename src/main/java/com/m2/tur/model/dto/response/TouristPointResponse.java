@@ -1,4 +1,7 @@
 package com.m2.tur.model.dto.response;
 
-public record TouristPointResponse() {
-}
+import java.util.UUID;
+
+public record TouristPointResponse(
+        UUID id
+) {}

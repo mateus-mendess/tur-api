@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -38,9 +39,26 @@ public class TouristPoint {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToOne(mappedBy = "touristPoint")
+    private Address address;
+
+    @ManyToMany
+    @JoinTable(
+            name = "tourist_point_categories",
+            joinColumns = @JoinColumn(name = "tourist_point_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories;
+
     @PrePersist
     public void prePersist() {
         this.active = true;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void associate(User user, Address address, Set<Category> categories) {
+        this.user = user;
+        this.address = address;
+        this.categories = categories;
     }
 }
