@@ -42,7 +42,7 @@ public class TouristPointController {
         return ResponseEntity.created(uri).body(response);
     }
 
-    @PutMapping("/{id]")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid TouristPointRequest request) {
         touristPointService.update(request, id);
 
