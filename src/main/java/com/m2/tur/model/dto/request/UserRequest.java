@@ -10,7 +10,7 @@ public record UserRequest(
         String email,
 
         @NotBlank
-        @Pattern(regexp = "",
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$",
         message = "")
         String password,
 

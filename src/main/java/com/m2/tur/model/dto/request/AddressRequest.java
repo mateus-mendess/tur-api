@@ -16,9 +16,9 @@ public record AddressRequest(
         @NotBlank(message = "city required.")
         String city,
 
-        @NotBlank
+        @NotBlank(message = "zipcode required.")
         @Pattern(regexp = "^\\d{5}-?\\d{3}$",
-        message = "Zipcode required.")
+        message = "Invalid zipcode format.")
         String zipcode,
 
         @NotNull
