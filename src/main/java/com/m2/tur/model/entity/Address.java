@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -34,10 +35,9 @@ public class Address {
 
     private Double longitude;
 
-    private Boolean active;
+    private LocalDateTime createdAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tourist_point_id")
+    @OneToOne(mappedBy = "address")
      private TouristPoint touristPoint;
 
     @ManyToOne
@@ -46,6 +46,6 @@ public class Address {
 
     @PrePersist
     public void prePersist() {
-        this.active = true;
+        this.createdAt = LocalDateTime.now();
     }
 }

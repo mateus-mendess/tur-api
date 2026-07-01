@@ -18,7 +18,6 @@ public record TouristPointRequest(
 
         Boolean hasAccessibility,
 
-        @NotBlank
         AddressRequest addressRequest,
 
         @NotNull

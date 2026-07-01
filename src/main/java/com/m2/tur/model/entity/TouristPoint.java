@@ -39,7 +39,8 @@ public class TouristPoint {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(mappedBy = "touristPoint")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "address_id")
     private Address address;
 
     @ManyToMany
