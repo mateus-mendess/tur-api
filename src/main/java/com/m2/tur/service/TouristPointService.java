@@ -1,6 +1,7 @@
 package com.m2.tur.service;
 
 import com.m2.tur.infra.exception.BusinessException;
+import com.m2.tur.infra.exception.ForbiddenException;
 import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.infra.exception.UnauthorizedException;
 import com.m2.tur.mapper.TouristPointMapper;
@@ -70,7 +71,7 @@ public class TouristPointService {
                 .orElseThrow(() -> new NotFoundException("Tourist Point not found"));
 
         if (!touristPoint.getUser().equals(user)) {
-            throw new UnauthorizedException("User not logged in");
+            throw new ForbiddenException("You don't have permission to update this tourist point");
         }
 
         touristPointMapper.updateEntity(request, touristPoint);
@@ -89,7 +90,7 @@ public class TouristPointService {
                 .orElseThrow(() -> new NotFoundException("Tourist Point not found"));
 
         if (!touristPoint.getUser().equals(user)) {
-            throw new UnauthorizedException("User not logged in");
+            throw new ForbiddenException("You don't have permission to update this tourist point");
         }
 
         touristPointRepository.delete(touristPoint);
