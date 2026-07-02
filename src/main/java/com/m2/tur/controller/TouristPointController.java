@@ -1,6 +1,7 @@
 package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.request.TouristPointRequest;
+import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.service.TouristPointService;
 import jakarta.validation.Valid;
@@ -42,8 +43,8 @@ public class TouristPointController {
         return ResponseEntity.created(uri).body(response);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid TouristPointRequest request) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid TouristPointUpdateRequest request) {
         touristPointService.update(request, id);
 
         return ResponseEntity.ok().build();

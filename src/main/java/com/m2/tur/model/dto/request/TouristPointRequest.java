@@ -32,10 +32,7 @@ public record TouristPointRequest(
 ) {
         @AssertTrue
         boolean isAccessibilityInfoValid() {
-                if (hasAccessibility == null) {
-                        return true;
-                }
-
-                return !hasAccessibility || (accessibilityInfo != null && !accessibilityInfo.isBlank());
+                return hasAccessibility == null || !hasAccessibility
+                        || (accessibilityInfo != null && !accessibilityInfo.isBlank());
         }
 }

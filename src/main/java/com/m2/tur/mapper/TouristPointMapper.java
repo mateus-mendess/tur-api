@@ -1,6 +1,7 @@
 package com.m2.tur.mapper;
 
 import com.m2.tur.model.dto.request.TouristPointRequest;
+import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.entity.TouristPoint;
 import org.mapstruct.BeanMapping;
@@ -15,5 +16,5 @@ public interface TouristPointMapper {
     TouristPointResponse toResponse(TouristPoint touristPoint);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntity(TouristPointRequest request, @MappingTarget TouristPoint touristPoint);
+    void updateEntity(TouristPointUpdateRequest request, @MappingTarget TouristPoint touristPoint);
 }
