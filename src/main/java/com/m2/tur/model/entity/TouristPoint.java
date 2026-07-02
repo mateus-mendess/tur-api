@@ -51,6 +51,11 @@ public class TouristPoint {
     )
     private Set<Category> categories;
 
+    @OneToMany(mappedBy = "touristPoint", cascade = {CascadeType.REMOVE, CascadeType.REFRESH},
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private Set<Comment> comments;
+
     @PrePersist
     public void prePersist() {
         this.active = true;
