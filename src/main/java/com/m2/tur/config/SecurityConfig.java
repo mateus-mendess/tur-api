@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/tourist-points").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{touristPointId}/comments").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/tourist-points/{touristPointId}/comments").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))

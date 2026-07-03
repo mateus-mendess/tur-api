@@ -30,7 +30,7 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "tourist_point_id")
     private TouristPoint touristPoint;
 
