@@ -14,6 +14,7 @@ public interface TouristPointMapper {
     @Mapping(source = "address", target = "addressResponse")
     @Mapping(source = "address.state.name", target = "addressResponse.state")
     @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "photos", target = "photoResponses")
     TouristPointResponse toResponse(TouristPoint touristPoint);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

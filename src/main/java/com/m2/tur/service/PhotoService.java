@@ -50,6 +50,26 @@ public class PhotoService {
         photoRepository.save(photo);
     }
 
+    @Transactional
+    public void delete(UUID id) {
+        User user  = authService.getAuthenticatedUser()
+                .orElseThrow(() -> new UnauthorizedException("User unauthorized."));
+
+        Photo photo = photoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Photo not found."));
+
+        TouristPoint touristPoint = touristPointRepository.findById(photo.getTouristPoint().getId())
+                .orElseThrow(() -> new NotFoundException("Tourist Point Not Found."));
+
+        if (!touristPoint.getUser().equals(user)) {
+            throw new ForbiddenException("User not allowed to save photos.");
+        }
+
+        supabaseStorageService.delete(photo.getPath());
+
+        photoRepository.delete(photo);
+    }
+
     private void validate(MultipartFile file, UUID touristPointId) {
         if (file == null || file.isEmpty()) {
             throw new InvalidFileException("File cannot be empty");

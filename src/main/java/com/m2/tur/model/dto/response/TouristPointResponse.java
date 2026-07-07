@@ -5,9 +5,16 @@ import java.util.UUID;
 
 public record TouristPointResponse(
         UUID id,
+
         String name,
+
         String description,
+
         String accessibilityInfo,
+
         AddressResponse addressResponse,
+
+        Set<PhotoResponse> photoResponses,
+
         Set<String> categories
 ) {}

@@ -29,7 +29,7 @@ public class SupabaseStorageService {
 
     public void delete(String filePath) {
         supabaseStorageClient.delete()
-                .uri(filePath)
+                .uri("/" + filePath)
                 .retrieve()
                 .toBodilessEntity();
     }

@@ -23,4 +23,11 @@ public class PhotoController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        photoService.delete(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
