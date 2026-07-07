@@ -1,4 +1,4 @@
-package com.m2.tur.service;
+package com.m2.tur.infra.client;
 
 import com.m2.tur.model.dto.response.CoordinatesResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @Service
-public class GeocodingService {
+public class GeocodingClient {
     private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
     private final ObjectMapper objectMapper;
 

@@ -1,5 +1,6 @@
 package com.m2.tur.service;
 
+import com.m2.tur.infra.client.SupabaseStorageClient;
 import com.m2.tur.infra.exception.*;
 import com.m2.tur.mapper.PhotoMapper;
 import com.m2.tur.model.entity.Photo;
@@ -23,7 +24,7 @@ public class PhotoService {
     private final PhotoMapper photoMapper;
     private final TouristPointRepository touristPointRepository;
     private final AuthService authService;
-    private final SupabaseStorageService supabaseStorageService;
+    private final SupabaseStorageClient supabaseStorageService;
 
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024L;
     private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp");

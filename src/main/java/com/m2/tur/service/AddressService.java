@@ -1,5 +1,6 @@
 package com.m2.tur.service;
 
+import com.m2.tur.infra.client.GeocodingClient;
 import com.m2.tur.mapper.AddressMapper;
 import com.m2.tur.model.dto.request.AddressRequest;
 import com.m2.tur.model.dto.response.CoordinatesResponse;
@@ -14,7 +15,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Service
 public class AddressService {
-    private final GeocodingService geocodingService;
+    private final GeocodingClient geocodingService;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
     private final StateService stateService;

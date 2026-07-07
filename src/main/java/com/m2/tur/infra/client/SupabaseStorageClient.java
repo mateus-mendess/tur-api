@@ -1,23 +1,30 @@
-package com.m2.tur.service;
+package com.m2.tur.infra.client;
 
-import lombok.RequiredArgsConstructor;
+import com.m2.tur.config.SupabaseConfig;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
 
-@RequiredArgsConstructor
-@Service
-public class SupabaseStorageService {
-    private final RestClient supabaseStorageClient;
+@Component
+public class SupabaseStorageClient {
+    private final RestClient restClient;
+
+    public SupabaseStorageClient(SupabaseConfig config) {
+        this.restClient = RestClient.builder()
+                .baseUrl(config.getUrl() + config.getBucket())
+                .defaultHeader("apikey", config.getAnonKey())
+                .defaultHeader("Authorization", "Bearer " + config.getServiceRoleKey())
+                .build();
+    }
 
     public String upload(MultipartFile file) throws IOException {
         String filePath = UUID.randomUUID().toString();
 
-        supabaseStorageClient.post()
+        restClient.post()
                 .uri("/" + filePath)
                 .body(file.getBytes())
                 .contentType(MediaType.parseMediaType(file.getContentType()))
@@ -28,7 +35,7 @@ public class SupabaseStorageService {
     }
 
     public void delete(String filePath) {
-        supabaseStorageClient.delete()
+        restClient.delete()
                 .uri("/" + filePath)
                 .retrieve()
                 .toBodilessEntity();
