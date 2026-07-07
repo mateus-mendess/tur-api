@@ -51,6 +51,9 @@ public class TouristPoint {
     )
     private Set<Category> categories;
 
+    @OneToMany(mappedBy = "touristPoint")
+    private Set<Photo> photos;
+
     @OneToMany(mappedBy = "touristPoint", cascade = {CascadeType.REMOVE, CascadeType.REFRESH},
             orphanRemoval = true,
             fetch = FetchType.LAZY)

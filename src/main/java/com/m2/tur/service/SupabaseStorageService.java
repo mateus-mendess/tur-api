@@ -18,7 +18,7 @@ public class SupabaseStorageService {
         String filePath = UUID.randomUUID().toString();
 
         supabaseStorageClient.post()
-                .uri(filePath)
+                .uri("/" + filePath)
                 .body(file.getBytes())
                 .contentType(MediaType.parseMediaType(file.getContentType()))
                 .retrieve()
