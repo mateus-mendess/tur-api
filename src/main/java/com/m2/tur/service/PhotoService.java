@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,7 +29,7 @@ public class PhotoService {
     private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp");
 
     @Transactional
-    public void save(UUID touristPointId, MultipartFile file) throws IOException {
+    public void save(UUID touristPointId, MultipartFile file) {
         User user  = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User unauthorized."));
 
@@ -45,10 +44,15 @@ public class PhotoService {
 
         String path = supabaseStorageService.upload(file);
 
-        Photo photo = photoMapper.toEntity(path);
-        photo.setTouristPoint(touristPoint);
+        try {
+            Photo photo = photoMapper.toEntity(path);
+            photo.setTouristPoint(touristPoint);
 
-        photoRepository.save(photo);
+            photoRepository.save(photo);
+        } catch (Exception e) {
+            supabaseStorageService.delete(path);
+            throw e;
+        }
     }
 
     @Transactional

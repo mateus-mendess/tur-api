@@ -17,7 +17,7 @@ public class PhotoController {
     private final PhotoService photoService;
 
     @PostMapping("/tourist-points/{id}")
-    public ResponseEntity<Void> upload(@PathVariable UUID id, @RequestParam MultipartFile file) throws IOException {
+    public ResponseEntity<Void> upload(@PathVariable UUID id, @RequestParam MultipartFile file) {
         photoService.save(id, file);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

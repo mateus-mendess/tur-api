@@ -32,7 +32,7 @@ public class TouristPointController {
     }
 
     @PostMapping
-    public ResponseEntity<TouristPointResponse> create(@RequestBody @Valid TouristPointRequest request) throws IOException, InterruptedException {
+    public ResponseEntity<TouristPointResponse> create(@RequestBody @Valid TouristPointRequest request) {
         TouristPointResponse response = touristPointService.save(request);
 
         URI uri = ServletUriComponentsBuilder

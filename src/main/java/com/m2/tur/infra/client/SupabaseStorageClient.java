@@ -1,6 +1,7 @@
 package com.m2.tur.infra.client;
 
 import com.m2.tur.config.SupabaseConfig;
+import com.m2.tur.infra.exception.StorageException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -21,23 +22,31 @@ public class SupabaseStorageClient {
                 .build();
     }
 
-    public String upload(MultipartFile file) throws IOException {
-        String filePath = UUID.randomUUID().toString();
+    public String upload(MultipartFile file) {
+        try {
+            String filePath = UUID.randomUUID().toString();
 
-        restClient.post()
-                .uri("/" + filePath)
-                .body(file.getBytes())
-                .contentType(MediaType.parseMediaType(file.getContentType()))
-                .retrieve()
-                .toBodilessEntity();
+            restClient.post()
+                    .uri("/" + filePath)
+                    .body(file.getBytes())
+                    .contentType(MediaType.parseMediaType(file.getContentType()))
+                    .retrieve()
+                    .toBodilessEntity();
 
-        return filePath;
+            return filePath;
+        } catch (IOException e) {
+            throw new StorageException("Failed to upload file.");
+        }
     }
 
     public void delete(String filePath) {
-        restClient.delete()
-                .uri("/" + filePath)
-                .retrieve()
-                .toBodilessEntity();
+        try {
+            restClient.delete()
+                    .uri("/" + filePath)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            throw new StorageException("Failed to delete file.");
+        }
     }
 }

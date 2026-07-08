@@ -18,7 +18,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class TouristPointService {
     }
 
     @Transactional
-    public TouristPointResponse save(TouristPointRequest request) throws IOException, InterruptedException {
+    public TouristPointResponse save(TouristPointRequest request) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
 

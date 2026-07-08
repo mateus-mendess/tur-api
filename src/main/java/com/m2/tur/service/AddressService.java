@@ -1,6 +1,7 @@
 package com.m2.tur.service;
 
 import com.m2.tur.infra.client.GeocodingClient;
+import com.m2.tur.infra.exception.GeocodingException;
 import com.m2.tur.mapper.AddressMapper;
 import com.m2.tur.model.dto.request.AddressRequest;
 import com.m2.tur.model.dto.response.CoordinatesResponse;
@@ -20,7 +21,7 @@ public class AddressService {
     private final AddressMapper addressMapper;
     private final StateService stateService;
 
-    public Address buildAddress(AddressRequest request) throws IOException, InterruptedException {
+    public Address buildAddress(AddressRequest request) {
         State state = stateService.findEntityById(request.stateId());
 
         String fullAddress = "%s, %s, %s, %s, %s".formatted(
@@ -31,11 +32,15 @@ public class AddressService {
                 request.zipcode()
         );
 
-        CoordinatesResponse response = geocodingService.getCoordinates(fullAddress);
+        try {
+            CoordinatesResponse response = geocodingService.getCoordinates(fullAddress);
 
-        Address address = addressMapper.toEntity(request, response.latitude(),  response.longitude());
-        address.setState(state);
+            Address address = addressMapper.toEntity(request, response.latitude(),  response.longitude());
+            address.setState(state);
 
-        return address;
+            return address;
+        } catch (Exception e) {
+            throw new GeocodingException("Failed to retrieve coordinates. Check the address and try again.");
+        }
     }
 }
