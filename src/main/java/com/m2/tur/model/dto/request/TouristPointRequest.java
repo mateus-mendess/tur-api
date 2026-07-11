@@ -1,5 +1,6 @@
 package com.m2.tur.model.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -25,6 +26,7 @@ public record TouristPointRequest(
         @Valid
         AddressRequest addressRequest,
 
+        @Schema(description = "List of category IDs to associate with the tourist point. At least one required.", example = "[\"550e8400-e29b-41d4-a716-446655440000\"]")
         @NotNull
         @Size(min = 1,
         message = "You must specify at least one category.")

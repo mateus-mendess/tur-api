@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{touristPointId}/comments").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/tourist-points/{touristPointId}/comments").permitAll()
+                                .requestMatchers(    "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
