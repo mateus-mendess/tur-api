@@ -1,6 +1,7 @@
 package com.m2.tur.factory;
 
 import com.m2.tur.model.dto.request.AddressRequest;
+import com.m2.tur.model.dto.response.AddressResponse;
 import com.m2.tur.model.entity.Address;
 
 import java.time.LocalDateTime;
@@ -53,5 +54,16 @@ public class AddressFactory {
         address.setCreatedAt(LocalDateTime.now());
         address.setState(StateFactory.createEntity());
         return address;
+    }
+
+    public static AddressResponse createResponse() {
+        return new AddressResponse(
+                "Rua do Comércio",
+                "Apt 101",
+                "Centro",
+                "Maceió",
+                "AL",
+                "57020-000"
+        );
     }
 }
