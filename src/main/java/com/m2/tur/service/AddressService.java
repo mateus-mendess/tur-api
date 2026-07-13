@@ -16,7 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Service
 public class AddressService {
-    private final GeocodingClient geocodingService;
+    private final GeocodingClient geocodingClient;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
     private final StateService stateService;
@@ -33,7 +33,7 @@ public class AddressService {
         );
 
         try {
-            CoordinatesResponse response = geocodingService.getCoordinates(fullAddress);
+            CoordinatesResponse response = geocodingClient.getCoordinates(fullAddress);
 
             Address address = addressMapper.toEntity(request, response.latitude(),  response.longitude());
             address.setState(state);

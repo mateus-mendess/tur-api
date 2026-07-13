@@ -53,7 +53,7 @@ public class UserServiceTest {
         }
 
         @Test
-        void should_return_NotFound_when_entity_not_found() {
+        void should_return_not_found_exception_when_entity_not_found() {
             //Arrange
             UUID id = UUID.randomUUID();
 
@@ -88,7 +88,7 @@ public class UserServiceTest {
         }
 
         @Test
-        void should_throw_EmailAlreadyExists_when_email_already_exists() {
+        void should_throw_email_already_exists_exception_when_email_already_exists() {
             //Assert
             UserRequest request = UserFactory.createRequest();
 
