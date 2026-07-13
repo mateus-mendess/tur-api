@@ -1,5 +1,6 @@
 package com.m2.tur.factory;
 
+import com.m2.tur.model.dto.response.StateResponse;
 import com.m2.tur.model.entity.State;
 
 import java.time.LocalDate;
@@ -12,5 +13,13 @@ public class StateFactory {
         state.setAbbreviation("AL");
         state.setCreatedAt(LocalDate.now());
         return state;
+    }
+
+    public static StateResponse createResponse() {
+        return new StateResponse(
+                1L,
+                "Alagoas",
+                "AL"
+        );
     }
 }
