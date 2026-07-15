@@ -51,7 +51,7 @@ public class TouristPointService {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
 
-        Address address = addressService.buildAddress(request.addressRequest());
+        Address address = addressService.create(request.addressRequest());
 
         Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.categoriesIds()));
 

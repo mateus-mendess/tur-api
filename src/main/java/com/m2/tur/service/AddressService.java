@@ -2,16 +2,20 @@ package com.m2.tur.service;
 
 import com.m2.tur.infra.client.GeocodingClient;
 import com.m2.tur.infra.exception.GeocodingException;
+import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.mapper.AddressMapper;
 import com.m2.tur.model.dto.request.AddressRequest;
 import com.m2.tur.model.dto.response.CoordinatesResponse;
 import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.State;
+import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.repository.AddressRepository;
+import com.m2.tur.model.repository.TouristPointRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -20,8 +24,17 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
     private final StateService stateService;
+    private final TouristPointRepository touristPointRepository;
 
-    public Address buildAddress(AddressRequest request) {
+    public Address create(AddressRequest request) {
+        Address address = new Address();
+
+        fillAddress(request, address);
+
+        return address;
+    }
+
+    private void fillAddress(AddressRequest request, Address address) {
         State state = stateService.findEntityById(request.stateId());
 
         String fullAddress = "%s, %s, %s, %s, %s".formatted(
@@ -32,15 +45,9 @@ public class AddressService {
                 request.zipcode()
         );
 
-        try {
-            CoordinatesResponse response = geocodingClient.getCoordinates(fullAddress);
+        CoordinatesResponse response = geocodingClient.getCoordinates(fullAddress);
 
-            Address address = addressMapper.toEntity(request, response.latitude(),  response.longitude());
-            address.setState(state);
-
-            return address;
-        } catch (Exception e) {
-            throw new GeocodingException("Failed to retrieve coordinates. Check the address and try again.");
-        }
+        addressMapper.toEntity(request, response.latitude(), response.longitude(), address);
+        address.setState(state);
     }
 }

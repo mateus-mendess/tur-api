@@ -127,7 +127,7 @@ public class TouristPointServiceTest {
             TouristPointResponse response = TouristPointFactory.createResponse();
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
-            when(addressService.buildAddress(request.addressRequest())).thenReturn(touristPoint.getAddress());
+            when(addressService.create(request.addressRequest())).thenReturn(touristPoint.getAddress());
             when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
             when(touristPointMapper.toEntity(request)).thenReturn(touristPoint);
             when(touristPointRepository.save(touristPoint)).thenReturn(touristPoint);
@@ -137,7 +137,7 @@ public class TouristPointServiceTest {
             var result = assertDoesNotThrow(() -> touristPointService.save(request));
 
             verify(authService).getAuthenticatedUser();
-            verify(addressService).buildAddress(any(AddressRequest.class));
+            verify(addressService).create(any(AddressRequest.class));
             verify(categoryRepository).findAllById(any(Set.class));
             verify(touristPointMapper).toEntity(any(TouristPointRequest.class));
             verify(touristPointRepository).save(captor.capture());
@@ -170,13 +170,13 @@ public class TouristPointServiceTest {
             TouristPointRequest request = TouristPointFactory.createRequest();
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(addressService.buildAddress(request.addressRequest())).thenThrow(new GeocodingException("Failed to retrieve coordinates. Check the address and try again."));
+            when(addressService.create(request.addressRequest())).thenThrow(new GeocodingException("Failed to retrieve coordinates. Check the address and try again."));
 
             //Act & Assert
             assertThrows(GeocodingException.class, () -> touristPointService.save(request));
 
             verify(authService).getAuthenticatedUser();
-            verify(addressService).buildAddress(any(AddressRequest.class));
+            verify(addressService).create(any(AddressRequest.class));
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
         }

@@ -19,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.UUID;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,26 +46,36 @@ public class AddressServiceTest {
     private ArgumentCaptor<Address> captor;
 
     @Nested
-    class BuildAddress {
+    class Create {
         @Test
-        void should_return_address_valid_with_success() {
+        void should_create_address_with_success() {
             //Arrange
             AddressRequest request = AddressFactory.createRequest();
-            Address address = AddressFactory.createEntity();
+            CoordinatesResponse coordinatesResponse = new CoordinatesResponse(17.909090, 16.909009);
             State state = StateFactory.createEntity();
-            CoordinatesResponse coordinatesResponse = new CoordinatesResponse(17.405050, 16.324235);
 
-            when(stateService.findEntityById(state.getId())).thenReturn(state);
+            when(stateService.findEntityById(any(Long.class))).thenReturn(state);
             when(geocodingClient.getCoordinates(any(String.class))).thenReturn(coordinatesResponse);
-            when(addressMapper.toEntity(request, coordinatesResponse.latitude(), coordinatesResponse.longitude())).thenReturn(address);
+            doAnswer(invocation -> {
+                Address address = invocation.getArgument(3);
+                address.setNeighborhood(request.neighborhood());
+                address.setLatitude(coordinatesResponse.latitude());
+                address.setLongitude(coordinatesResponse.longitude());
+                return null;
+            }).when(addressMapper).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> addressService.buildAddress(request));
+            var result = assertDoesNotThrow(() -> addressService.create(request));
 
+            verify(stateService).findEntityById(any(Long.class));
             verify(geocodingClient).getCoordinates(any(String.class));
+            verify(addressMapper).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
 
-            assertEquals(address.getId(), result.getId());
-            assertEquals(state.getId(), result.getState().getId());
+            assertInstanceOf(Address.class, result);
+            assertEquals(request.neighborhood(), result.getNeighborhood());
+            assertEquals(state, result.getState());
+            assertEquals(coordinatesResponse.latitude(), result.getLatitude());
+            assertEquals(coordinatesResponse.longitude(), result.getLongitude());
         }
 
         @Test
@@ -76,7 +88,7 @@ public class AddressServiceTest {
             when(geocodingClient.getCoordinates(any(String.class))).thenThrow(new GeocodingException("Failed to retrieve coordinates. Check the address and try again."));
 
             //Act & Assert
-            var result = assertThrows(GeocodingException.class, () -> addressService.buildAddress(request));
+            var result = assertThrows(GeocodingException.class, () -> addressService.create(request));
             assertEquals("Failed to retrieve coordinates. Check the address and try again.", result.getMessage());
         }
     }
