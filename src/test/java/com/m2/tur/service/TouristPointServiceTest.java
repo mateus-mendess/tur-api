@@ -1,0 +1,186 @@
+package com.m2.tur.service;
+
+import com.m2.tur.factory.TouristPointFactory;
+import com.m2.tur.factory.UserFactory;
+import com.m2.tur.infra.exception.GeocodingException;
+import com.m2.tur.infra.exception.NotFoundException;
+import com.m2.tur.infra.exception.UnauthorizedException;
+import com.m2.tur.mapper.TouristPointMapper;
+import com.m2.tur.model.dto.request.AddressRequest;
+import com.m2.tur.model.dto.request.TouristPointRequest;
+import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.entity.Address;
+import com.m2.tur.model.entity.TouristPoint;
+import com.m2.tur.model.entity.User;
+import com.m2.tur.model.repository.CategoryRepository;
+import com.m2.tur.model.repository.TouristPointRepository;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.*;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(MockitoExtension.class)
+public class TouristPointServiceTest {
+    @Mock
+    private TouristPointRepository touristPointRepository;
+
+    @Mock
+    private TouristPointMapper touristPointMapper;
+
+    @Mock
+    private AuthService authService;
+
+    @Mock
+    private AddressService addressService;
+
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @InjectMocks
+    private TouristPointService touristPointService;
+
+    @Captor
+    private ArgumentCaptor<TouristPoint> captor;
+
+    @Nested
+    class FindAll {
+        @Test
+        void should_return_all_tourist_points_with_success() {
+            //Arrange
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+            TouristPointResponse response = TouristPointFactory.createResponse();
+
+            when(touristPointRepository.findAll()).thenReturn(List.of(touristPoint));
+            when(touristPointMapper.toResponse(touristPoint)).thenReturn(response);
+
+            //Act & Assert
+            var result = assertDoesNotThrow(() -> touristPointService.findAll());
+
+            verify(touristPointRepository).findAll();
+            verify(touristPointMapper).toResponse(any(TouristPoint.class));
+
+            assertNotNull(result);
+            assertInstanceOf(TouristPointResponse.class, result.get(0));
+        }
+
+        @Test
+        void should_return_empty_list_when_no_tourist_points_exist() {
+            //Arrange
+            when(touristPointRepository.findAll()).thenReturn(Collections.emptyList());
+
+            //Act & Assert
+            var result = assertDoesNotThrow(() -> touristPointService.findAll());
+
+            verify(touristPointRepository).findAll();
+
+            assertTrue(result.isEmpty());
+        }
+    }
+
+    @Nested
+    class FindById {
+        @Test
+        void should_return_tourist_point_with_success() {
+            //Arrange
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+            TouristPointResponse response = TouristPointFactory.createResponse();
+
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+            when(touristPointMapper.toResponse(touristPoint)).thenReturn(response);
+
+            //Act & Assert
+            var result = assertDoesNotThrow(() -> touristPointService.findById(touristPoint.getId()));
+
+            verify(touristPointRepository).findById(any(UUID.class));
+
+            assertInstanceOf(TouristPointResponse.class, result);
+            assertEquals(response.id(), result.id());
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_not_tourist_point_exist() {
+            //Arrange
+            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class, () -> touristPointService.findById(UUID.randomUUID()));
+
+            verify(touristPointMapper, times(0)).toResponse(any(TouristPoint.class));
+        }
+    }
+
+    @Nested
+    class Save {
+        @Test
+        void should_save_tourist_point_with_success() {
+            //Arrange
+            TouristPointRequest request = TouristPointFactory.createRequest();
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+            TouristPointResponse response = TouristPointFactory.createResponse();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(addressService.buildAddress(request.addressRequest())).thenReturn(touristPoint.getAddress());
+            when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
+            when(touristPointMapper.toEntity(request)).thenReturn(touristPoint);
+            when(touristPointRepository.save(touristPoint)).thenReturn(touristPoint);
+            when(touristPointMapper.toResponse(touristPoint)).thenReturn(response);
+
+            //Act & Assert
+            var result = assertDoesNotThrow(() -> touristPointService.save(request));
+
+            verify(authService).getAuthenticatedUser();
+            verify(addressService).buildAddress(any(AddressRequest.class));
+            verify(categoryRepository).findAllById(any(Set.class));
+            verify(touristPointMapper).toEntity(any(TouristPointRequest.class));
+            verify(touristPointRepository).save(captor.capture());
+
+            var captured = captor.getValue();
+
+            assertInstanceOf(TouristPointResponse.class, result);
+            assertEquals(response.id(), result.id());
+            assertEquals(touristPoint.getUser(), captured.getUser());
+            assertEquals(touristPoint.getAddress(), captured.getAddress());
+            assertEquals(touristPoint.getCategories(), captured.getCategories());
+        }
+
+        @Test
+        void should_throw_unauthorized_exception_when_user_not_authenticated() {
+            //Arrange
+            TouristPointRequest request = TouristPointFactory.createRequest();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
+            //Act & Assert
+            assertThrows(UnauthorizedException.class, () -> touristPointService.save(request));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+        }
+
+        @Test
+        void should_throw_geocoding_exception_when_GeocodingClient_failed() {
+            //Arrange
+            TouristPointRequest request = TouristPointFactory.createRequest();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
+            when(addressService.buildAddress(request.addressRequest())).thenThrow(new GeocodingException("Failed to retrieve coordinates. Check the address and try again."));
+
+            //Act & Assert
+            assertThrows(GeocodingException.class, () -> touristPointService.save(request));
+
+            verify(authService).getAuthenticatedUser();
+            verify(addressService).buildAddress(any(AddressRequest.class));
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+
+        }
+    }
+}
