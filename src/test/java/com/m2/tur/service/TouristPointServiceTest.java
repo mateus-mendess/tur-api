@@ -2,14 +2,12 @@ package com.m2.tur.service;
 
 import com.m2.tur.factory.TouristPointFactory;
 import com.m2.tur.factory.UserFactory;
-import com.m2.tur.infra.exception.GeocodingException;
-import com.m2.tur.infra.exception.NotFoundException;
-import com.m2.tur.infra.exception.UnauthorizedException;
+import com.m2.tur.infra.exception.*;
 import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.request.AddressRequest;
 import com.m2.tur.model.dto.request.TouristPointRequest;
+import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
-import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.CategoryRepository;
@@ -181,6 +179,165 @@ public class TouristPointServiceTest {
             verify(addressService).buildAddress(any(AddressRequest.class));
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
+        }
+    }
+
+    @Nested
+    class Update {
+        @Test
+        void should_update_tourist_point_with_success() {
+            //Arrange
+            TouristPointUpdateRequest request = TouristPointFactory.createUpdateRequest();
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+            doNothing().when(touristPointMapper).updateEntity(request, touristPoint);
+            when(touristPointRepository.save(touristPoint)).thenReturn(touristPoint);
+
+            //Act & Assert
+            assertDoesNotThrow(() -> touristPointService.update(request, touristPoint.getId()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointMapper).updateEntity(any(TouristPointUpdateRequest.class), any(TouristPoint.class));
+            verify(touristPointRepository).save(captor.capture());
+
+            var captured = captor.getValue();
+
+            assertNotNull(captured);
+            assertEquals(touristPoint.getUser(), captured.getUser());
+        }
+
+        @Test
+        void should_throw_unauthorized_exception_when_user_not_authenticated() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(UnauthorizedException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), UUID.randomUUID()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_no_tourist_point_exists() {
+            //Arrange
+            UUID id = UUID.randomUUID();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
+            when(touristPointRepository.findById(id)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), id));
+
+            verify(touristPointRepository).findById(any(UUID.class));
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+        }
+
+        @Test
+        void should_throw_forbidden_exception_when_user_not_authorized() {
+            //Arrange
+            User user =  UserFactory.createEntity();
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+
+            //Act & Assert
+            assertThrows(ForbiddenException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), touristPoint.getId()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository).findById(touristPoint.getId());
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+
+            assertNotEquals(touristPoint.getUser(), user);
+        }
+
+        @Test
+        void should_throw_business_exception_when_data_accessibility_info_is_null() {
+            //Arrange
+            TouristPoint touristPoint =  TouristPointFactory.createEntity();
+            touristPoint.setAccessibilityInfo(null);
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+            doNothing().when(touristPointMapper).updateEntity(TouristPointFactory.createUpdateRequest(), touristPoint);
+
+            //Act & Assert
+            assertThrows(BusinessException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), touristPoint.getId()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointMapper).updateEntity(any(TouristPointUpdateRequest.class), any(TouristPoint.class));
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+        }
+    }
+
+    @Nested
+    class Delete {
+        @Test
+        void should_delete_tourist_point_with_success() {
+            //Arrange
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+
+            //Act & Assert
+            assertDoesNotThrow(() -> touristPointService.delete(touristPoint.getId()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository).findById(any(UUID.class));
+            verify(touristPointRepository).delete(captor.capture());
+
+            var captured = captor.getValue();
+
+            assertEquals(touristPoint.getUser(), captured.getUser());
+        }
+
+        @Test
+        void should_throw_unauthorized_exception_when_user_not_authenticated() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(UnauthorizedException.class, () -> touristPointService.delete(UUID.randomUUID()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_no_tourist_point_exists() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
+            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(NotFoundException.class, () -> touristPointService.delete(UUID.randomUUID()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository).findById(any(UUID.class));
+            verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
+        }
+
+        @Test
+        void should_throw_forbidden_exception_when_user_not_authorized() {
+            //Arrange
+            User user =  UserFactory.createEntity();
+            TouristPoint touristPoint =  TouristPointFactory.createEntity();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+
+            //Act & Assert
+            assertThrows(ForbiddenException.class, () -> touristPointService.delete(touristPoint.getId()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository).findById(any(UUID.class));
+            verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
+
+            assertNotEquals(touristPoint.getUser(), user);
         }
     }
 }

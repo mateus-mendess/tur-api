@@ -1,6 +1,7 @@
 package com.m2.tur.factory;
 
 import com.m2.tur.model.dto.request.TouristPointRequest;
+import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.entity.TouristPoint;
 
@@ -40,6 +41,15 @@ public class TouristPointFactory {
                 null,
                 AddressFactory.createRequest(),
                 Collections.emptySet()
+        );
+    }
+
+    public static TouristPointUpdateRequest createUpdateRequest() {
+        return new TouristPointUpdateRequest(
+                "Praia do Francês",
+                "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.",
+                true,
+                "Rampas de acesso para cadeirantes disponíveis."
         );
     }
 
