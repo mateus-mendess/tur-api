@@ -34,6 +34,13 @@ public class AddressService {
         return address;
     }
 
+    public void update(UUID touristPointId, AddressRequest request) {
+        TouristPoint touristPoint = touristPointRepository.findById(touristPointId)
+                .orElseThrow(() -> new NotFoundException("tourist point not found"));
+
+        fillAddress(request, touristPoint.getAddress());
+    }
+
     private void fillAddress(AddressRequest request, Address address) {
         State state = stateService.findEntityById(request.stateId());
 
