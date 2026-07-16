@@ -43,6 +43,7 @@ public class AddressService {
 
     private void fillAddress(AddressRequest request, Address address) {
         State state = stateService.findEntityById(request.stateId());
+        address.setState(state);
 
         String fullAddress = "%s, %s, %s, %s, %s".formatted(
                 request.street(),
@@ -55,6 +56,5 @@ public class AddressService {
         CoordinatesResponse response = geocodingClient.getCoordinates(fullAddress);
 
         addressMapper.toEntity(request, response.latitude(), response.longitude(), address);
-        address.setState(state);
     }
 }
