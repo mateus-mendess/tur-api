@@ -61,6 +61,7 @@ public class TouristPointController {
             @ApiResponse(responseCode = "201", description = "Tourist point registered successfully."),
             @ApiResponse(responseCode = "400", description = "Invalid request data."),
             @ApiResponse(responseCode = "401", description = "User not authenticated."),
+            @ApiResponse(responseCode = "404", description = "State not found"),
             @ApiResponse(responseCode = "503", description = "Failed to retrieve coordinates from geocoding service."),
     })
     @PostMapping
