@@ -1,7 +1,6 @@
 package com.m2.tur.service;
 
 import com.m2.tur.infra.client.GeocodingClient;
-import com.m2.tur.infra.exception.GeocodingException;
 import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.mapper.AddressMapper;
 import com.m2.tur.model.dto.request.AddressRequest;
@@ -34,6 +33,7 @@ public class AddressService {
         return address;
     }
 
+    @Transactional
     public void update(UUID touristPointId, AddressRequest request) {
         TouristPoint touristPoint = touristPointRepository.findById(touristPointId)
                 .orElseThrow(() -> new NotFoundException("tourist point not found"));
