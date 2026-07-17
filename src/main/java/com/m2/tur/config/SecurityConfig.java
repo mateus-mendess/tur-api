@@ -34,7 +34,8 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilter(HttpSecurity http) {
-        return http.csrf(csrf -> csrf.disable())
+        return http.cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth -> auth
