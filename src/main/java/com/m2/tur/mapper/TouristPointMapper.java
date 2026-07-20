@@ -12,17 +12,9 @@ import org.mapstruct.*;
 public interface TouristPointMapper {
     TouristPoint toEntity(TouristPointRequest request);
 
-    @Mapping(source = "address", target = "addressResponse")
-    @Mapping(source = "address.state.name", target = "addressResponse.state")
-    @Mapping(source = "categories", target = "categories")
-    @Mapping(source = "accessibilityTypes", target = "accessibilityTypes")
-    @Mapping(source = "photos", target = "photoResponses")
+    @Mapping(source = "address.state.name", target = "address.state")
     TouristPointResponse toResponse(TouristPoint touristPoint);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(TouristPointUpdateRequest request, @MappingTarget TouristPoint touristPoint);
-
-    default String mapCategory(Category category) {
-        return category.getName();
-    }
 }

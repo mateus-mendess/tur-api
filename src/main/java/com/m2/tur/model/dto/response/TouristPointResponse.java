@@ -12,9 +12,9 @@ public record TouristPointResponse(
 
         Set<AccessibilityTypesResponse> accessibilityTypes,
 
-        AddressResponse addressResponse,
+        AddressResponse address,
 
-        Set<PhotoResponse> photoResponses,
+        Set<PhotoResponse> photos,
 
-        Set<String> categories
+        Set<CategoryResponse> categories
 ) {}
