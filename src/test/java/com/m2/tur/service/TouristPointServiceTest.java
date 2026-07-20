@@ -10,6 +10,7 @@ import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
+import com.m2.tur.model.repository.AccessibilityTypesRepository;
 import com.m2.tur.model.repository.CategoryRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import org.junit.jupiter.api.Nested;
@@ -43,6 +44,9 @@ public class TouristPointServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private AccessibilityTypesRepository accessibilityTypesRepository;
 
     @InjectMocks
     private TouristPointService touristPointService;
@@ -129,6 +133,7 @@ public class TouristPointServiceTest {
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
             when(addressService.create(request.addressRequest())).thenReturn(touristPoint.getAddress());
             when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
+            when(accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())).thenReturn(new ArrayList<>(touristPoint.getAccessibilityTypes()));
             when(touristPointMapper.toEntity(request)).thenReturn(touristPoint);
             when(touristPointRepository.save(touristPoint)).thenReturn(touristPoint);
             when(touristPointMapper.toResponse(touristPoint)).thenReturn(response);
@@ -139,6 +144,7 @@ public class TouristPointServiceTest {
             verify(authService).getAuthenticatedUser();
             verify(addressService).create(any(AddressRequest.class));
             verify(categoryRepository).findAllById(any(Set.class));
+            verify(accessibilityTypesRepository).findAllById(any(Set.class));
             verify(touristPointMapper).toEntity(any(TouristPointRequest.class));
             verify(touristPointRepository).save(captor.capture());
 
@@ -149,6 +155,7 @@ public class TouristPointServiceTest {
             assertEquals(touristPoint.getUser(), captured.getUser());
             assertEquals(touristPoint.getAddress(), captured.getAddress());
             assertEquals(touristPoint.getCategories(), captured.getCategories());
+            assertEquals(touristPoint.getAccessibilityTypes(), captured.getAccessibilityTypes());
         }
 
         @Test
@@ -252,24 +259,6 @@ public class TouristPointServiceTest {
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
             assertNotEquals(touristPoint.getUser(), user);
-        }
-
-        @Test
-        void should_throw_business_exception_when_data_accessibility_info_is_null() {
-            //Arrange
-            TouristPoint touristPoint =  TouristPointFactory.createEntity();
-            touristPoint.setAccessibilityInfo(null);
-
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
-            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
-            doNothing().when(touristPointMapper).updateEntity(TouristPointFactory.createUpdateRequest(), touristPoint);
-
-            //Act & Assert
-            assertThrows(BusinessException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), touristPoint.getId()));
-
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointMapper).updateEntity(any(TouristPointUpdateRequest.class), any(TouristPoint.class));
-            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
         }
     }
 

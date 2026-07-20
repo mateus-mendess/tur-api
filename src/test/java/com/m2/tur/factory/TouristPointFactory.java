@@ -15,19 +15,7 @@ public class TouristPointFactory {
         return new TouristPointRequest(
                 "Praia do Francês",
                 "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.",
-                true,
-                "Rampas de acesso para cadeirantes disponíveis.",
-                AddressFactory.createRequest(),
-                Set.of(UUID.randomUUID())
-        );
-    }
-
-    public static TouristPointRequest createRequestWithoutAccessibilityInfo() {
-        return new TouristPointRequest(
-                "Praia do Francês",
-                "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.",
-                true,
-                null,
+                Set.of(1L),
                 AddressFactory.createRequest(),
                 Set.of(UUID.randomUUID())
         );
@@ -37,19 +25,26 @@ public class TouristPointFactory {
         return new TouristPointRequest(
                 "Praia do Francês",
                 "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.",
-                false,
-                null,
+                Set.of(1L),
                 AddressFactory.createRequest(),
                 Collections.emptySet()
+        );
+    }
+
+    public static TouristPointRequest createRequestWithoutAccessibilityTypes() {
+        return new TouristPointRequest(
+                "Praia do Francês",
+                "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.",
+                Collections.emptySet(),
+                AddressFactory.createRequest(),
+                Set.of(UUID.randomUUID())
         );
     }
 
     public static TouristPointUpdateRequest createUpdateRequest() {
         return new TouristPointUpdateRequest(
                 "Praia do Francês",
-                "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.",
-                true,
-                "Rampas de acesso para cadeirantes disponíveis."
+                "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca."
         );
     }
 
@@ -58,13 +53,12 @@ public class TouristPointFactory {
         touristPoint.setId(UUID.randomUUID());
         touristPoint.setName("Praia do Francês");
         touristPoint.setDescription("Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.");
-        touristPoint.setHasAccessibility(true);
-        touristPoint.setAccessibilityInfo("Rampas de acesso para cadeirantes disponíveis.");
         touristPoint.setActive(true);
         touristPoint.setCreatedAt(LocalDateTime.now());
         touristPoint.setUser(UserFactory.createEntity());
         touristPoint.setAddress(AddressFactory.createEntity());
         touristPoint.setCategories(Set.of(CategoryFactory.createEntity()));
+        touristPoint.setAccessibilityTypes(Set.of(AccessibilityTypeFactory.createEntity()));
         return touristPoint;
     }
 
@@ -79,10 +73,10 @@ public class TouristPointFactory {
                 UUID.randomUUID(),
                 "Praia do Francês",
                 "Uma das praias mais bonitas de Alagoas, com águas cristalinas e areia branca.",
-                "Rampas de acesso para cadeirantes disponíveis.",
+                Set.of(AccessibilityTypeFactory.createResponse()),
                 AddressFactory.createResponse(),
                 Set.of(PhotoFactory.createResponse()),
-                Set.of("Praias")
+                Set.of(CategoryFactory.createResponse())
         );
     }
 }
