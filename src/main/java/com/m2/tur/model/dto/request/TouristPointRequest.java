@@ -19,9 +19,7 @@ public record TouristPointRequest(
         String description,
 
         @NotNull
-        Boolean hasAccessibility,
-
-        String accessibilityInfo,
+        Set<Long> accessibilityTypesIds,
 
         @Valid
         AddressRequest addressRequest,
@@ -31,10 +29,4 @@ public record TouristPointRequest(
         @Size(min = 1,
         message = "You must specify at least one category.")
         Set<UUID> categoriesIds
-) {
-        @AssertTrue
-        boolean isAccessibilityInfoValid() {
-                return hasAccessibility == null || !hasAccessibility
-                        || (accessibilityInfo != null && !accessibilityInfo.isBlank());
-        }
-}
+) {}

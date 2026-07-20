@@ -1,6 +1,5 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.BusinessException;
 import com.m2.tur.infra.exception.ForbiddenException;
 import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.infra.exception.UnauthorizedException;
@@ -8,10 +7,8 @@ import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.request.TouristPointRequest;
 import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
-import com.m2.tur.model.entity.Address;
-import com.m2.tur.model.entity.Category;
-import com.m2.tur.model.entity.TouristPoint;
-import com.m2.tur.model.entity.User;
+import com.m2.tur.model.entity.*;
+import com.m2.tur.model.repository.AccessibilityTypesRepository;
 import com.m2.tur.model.repository.CategoryRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
@@ -31,6 +28,7 @@ public class TouristPointService {
     private final AuthService authService;
     private final AddressService addressService;
     private final CategoryRepository categoryRepository;
+    private final AccessibilityTypesRepository accessibilityTypesRepository;
 
     public List<TouristPointResponse> findAll() {
         return touristPointRepository.findAll()
@@ -55,8 +53,12 @@ public class TouristPointService {
 
         Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.categoriesIds()));
 
+        Set<AccessibilityTypes> accessibilityTypes = new HashSet<>(
+                accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())
+        );
+
         TouristPoint touristPoint = touristPointMapper.toEntity(request);
-        touristPoint.associate(user, address, categories);
+        touristPoint.associate(user, address, categories, accessibilityTypes);
 
         return touristPointMapper.toResponse(touristPointRepository.save(touristPoint));
     }
@@ -75,8 +77,6 @@ public class TouristPointService {
 
         touristPointMapper.updateEntity(request, touristPoint);
 
-        validateUpdate(touristPoint);
-
         touristPointRepository.save(touristPoint);
     }
 
@@ -94,17 +94,4 @@ public class TouristPointService {
 
         touristPointRepository.delete(touristPoint);
     }
-
-    private void validateUpdate(TouristPoint touristPoint) {
-        if (Boolean.TRUE.equals(touristPoint.getHasAccessibility())) {
-
-            if (touristPoint.getAccessibilityInfo() == null || touristPoint.getAccessibilityInfo().isBlank()) {
-                throw new BusinessException("accessibilityInfo must be provided when hasAccessibility is true.");
-            }
-
-        } else if (Boolean.FALSE.equals(touristPoint.getHasAccessibility())) {
-            touristPoint.setAccessibilityInfo(null);
-        }
-    }
-
 }

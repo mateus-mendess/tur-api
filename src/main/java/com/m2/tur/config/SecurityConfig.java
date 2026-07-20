@@ -39,11 +39,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{touristPointId}/comments").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/accessibilities").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/tourist-points/{touristPointId}/comments").permitAll()
                                 .requestMatchers(    "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated()
@@ -64,7 +65,6 @@ public class SecurityConfig {
 
         return new NimbusJwtEncoder(jwkSet);
     }
-
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {

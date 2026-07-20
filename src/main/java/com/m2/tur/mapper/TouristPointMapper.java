@@ -3,6 +3,7 @@ package com.m2.tur.mapper;
 import com.m2.tur.model.dto.request.TouristPointRequest;
 import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.entity.AccessibilityTypes;
 import com.m2.tur.model.entity.Category;
 import com.m2.tur.model.entity.TouristPoint;
 import org.mapstruct.*;
@@ -14,6 +15,7 @@ public interface TouristPointMapper {
     @Mapping(source = "address", target = "addressResponse")
     @Mapping(source = "address.state.name", target = "addressResponse.state")
     @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "accessibilityTypes", target = "accessibilityTypes")
     @Mapping(source = "photos", target = "photoResponses")
     TouristPointResponse toResponse(TouristPoint touristPoint);
 

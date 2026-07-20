@@ -10,7 +10,7 @@ public record TouristPointResponse(
 
         String description,
 
-        String accessibilityInfo,
+        Set<AccessibilityTypesResponse> accessibilityTypes,
 
         AddressResponse addressResponse,
 

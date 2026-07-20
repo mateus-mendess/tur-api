@@ -25,10 +25,6 @@ public class TouristPoint {
 
     private String description;
 
-    private String accessibilityInfo;
-
-    private Boolean hasAccessibility;
-
     private Boolean active;
 
     private LocalDateTime createdAt;
@@ -51,6 +47,14 @@ public class TouristPoint {
     )
     private Set<Category> categories;
 
+    @ManyToMany
+    @JoinTable(
+            name = "tourist_point_accessibility_types",
+            joinColumns = @JoinColumn(name = "tourist_point_id"),
+            inverseJoinColumns = @JoinColumn(name = "accessibility_id")
+    )
+    private Set<AccessibilityTypes> accessibilityTypes;
+
     @OneToMany(mappedBy = "touristPoint")
     private Set<Photo> photos;
 
@@ -65,9 +69,13 @@ public class TouristPoint {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void associate(User user, Address address, Set<Category> categories) {
+    public void associate(User user,
+                          Address address,
+                          Set<Category> categories,
+                          Set<AccessibilityTypes> accessibilityTypes) {
         this.user = user;
         this.address = address;
         this.categories = categories;
+        this.accessibilityTypes = accessibilityTypes;
     }
 }
