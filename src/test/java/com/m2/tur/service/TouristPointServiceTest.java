@@ -1,6 +1,7 @@
 package com.m2.tur.service;
 
 import com.m2.tur.factory.AddressFactory;
+import com.m2.tur.factory.PhotoFactory;
 import com.m2.tur.factory.TouristPointFactory;
 import com.m2.tur.factory.UserFactory;
 import com.m2.tur.infra.exception.*;
@@ -42,6 +43,9 @@ public class TouristPointServiceTest {
 
     @Mock
     private AddressService addressService;
+
+    @Mock
+    private PhotoService photoService;
 
     @Mock
     private CategoryRepository categoryRepository;
@@ -314,6 +318,7 @@ public class TouristPointServiceTest {
             TouristPoint touristPoint = TouristPointFactory.createEntity();
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            doNothing().when(photoService).delete(any(UUID.class));
             when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
 
             //Act & Assert
@@ -321,6 +326,7 @@ public class TouristPointServiceTest {
 
             verify(authService).getAuthenticatedUser();
             verify(touristPointRepository).findById(any(UUID.class));
+            verify(photoService).delete(any(UUID.class));
             verify(touristPointRepository).delete(captor.capture());
 
             var captured = captor.getValue();
@@ -347,11 +353,14 @@ public class TouristPointServiceTest {
             when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(NotFoundException.class, () -> touristPointService.delete(UUID.randomUUID()));
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.delete(UUID.randomUUID()));
 
             verify(authService).getAuthenticatedUser();
             verify(touristPointRepository).findById(any(UUID.class));
+            verify(photoService, times(0)).delete(any(UUID.class));
             verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
+
+            assertEquals("Tourist Point not found", result.getMessage());
         }
 
         @Test
@@ -371,6 +380,46 @@ public class TouristPointServiceTest {
             verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
 
             assertNotEquals(touristPoint.getUser(), user);
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_not_photo_exists() {
+            //Arrange
+            TouristPoint touristPoint  =  TouristPointFactory.createEntity();
+            touristPoint.setPhotos(Set.of(PhotoFactory.createEntity()));
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
+            doThrow(new NotFoundException("Photo not found.")).when(photoService).delete(any(UUID.class));
+
+            //Act & Assert
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.delete(UUID.randomUUID()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository).findById(any(UUID.class));
+            verify(photoService).delete(any(UUID.class));
+            verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
+
+            assertEquals("Photo not found.", result.getMessage());
+        }
+
+        @Test
+        void should_throw_storage_exception_when_supabase_storage_fails() {
+            //Arrange
+            TouristPoint touristPoint =  TouristPointFactory.createEntity();
+            touristPoint.setPhotos(Set.of(PhotoFactory.createEntity()));
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
+            doThrow(StorageException.class).when(photoService).delete(any(UUID.class));
+
+            //Act & Assert
+            assertThrows(StorageException.class, () -> touristPointService.delete(UUID.randomUUID()));
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository).findById(any(UUID.class));
+            verify(photoService).delete(any(UUID.class));
+            verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
         }
     }
 }
