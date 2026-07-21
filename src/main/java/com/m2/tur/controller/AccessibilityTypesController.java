@@ -1,5 +1,6 @@
 package com.m2.tur.controller;
 
+import com.m2.tur.model.dto.request.AccessibilityUpdateRequest;
 import com.m2.tur.model.dto.response.AccessibilityTypesResponse;
 import com.m2.tur.service.AccessibilityTypesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,11 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "Accessibility", description = "Endpoint for listing available accessibility types for tourist points.")
 @RequiredArgsConstructor
@@ -31,6 +31,13 @@ public class AccessibilityTypesController {
     @GetMapping
     public ResponseEntity<List<AccessibilityTypesResponse>> getAllAccessibilityTypes() {
         return ResponseEntity.ok(accessibilityTypesService.findAllAccessibilityTypes());
+    }
+
+    @PatchMapping("/tourist-point/{id}")
+    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody AccessibilityUpdateRequest request) {
+        accessibilityTypesService.update(id, request);
+
+        return ResponseEntity.ok().build();
     }
 }
 
