@@ -1,5 +1,6 @@
 package com.m2.tur.service;
 
+import com.m2.tur.infra.exception.BusinessException;
 import com.m2.tur.infra.exception.ForbiddenException;
 import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.infra.exception.UnauthorizedException;
@@ -57,6 +58,8 @@ public class TouristPointService {
                 accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())
         );
 
+        validate(request, categories, accessibilityTypes);
+
         TouristPoint touristPoint = touristPointMapper.toEntity(request);
         touristPoint.associate(user, address, categories, accessibilityTypes);
 
@@ -93,5 +96,15 @@ public class TouristPointService {
         }
 
         touristPointRepository.delete(touristPoint);
+    }
+
+    private void validate(TouristPointRequest request, Set<Category> categories, Set<AccessibilityTypes> accessibilityTypes) {
+        if (categories.size() != request.categoriesIds().size()) {
+            throw new NotFoundException("Category not found.");
+        }
+
+        if (accessibilityTypes.size() != request.accessibilityTypesIds().size()) {
+            throw new NotFoundException("Accessibility not found.");
+        }
     }
 }
