@@ -28,6 +28,7 @@ public class TouristPointService {
     private final TouristPointMapper touristPointMapper;
     private final AuthService authService;
     private final AddressService addressService;
+    private final PhotoService photoService;
     private final CategoryRepository categoryRepository;
     private final AccessibilityTypesRepository accessibilityTypesRepository;
 
@@ -93,6 +94,10 @@ public class TouristPointService {
 
         if (!touristPoint.getUser().equals(user)) {
             throw new ForbiddenException("You don't have permission to update this tourist point");
+        }
+
+        for (Photo photo : touristPoint.getPhotos()) {
+            photoService.delete(photo.getId());
         }
 
         touristPointRepository.delete(touristPoint);
