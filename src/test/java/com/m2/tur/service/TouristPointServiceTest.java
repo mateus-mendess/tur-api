@@ -1,5 +1,6 @@
 package com.m2.tur.service;
 
+import com.m2.tur.factory.AddressFactory;
 import com.m2.tur.factory.TouristPointFactory;
 import com.m2.tur.factory.UserFactory;
 import com.m2.tur.infra.exception.*;
@@ -186,6 +187,49 @@ public class TouristPointServiceTest {
             verify(addressService).create(any(AddressRequest.class));
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_no_category_exists() {
+            //Arrange
+            TouristPointRequest request = TouristPointFactory.createRequest();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
+            when(addressService.create(request.addressRequest())).thenReturn(AddressFactory.createEntity());
+            when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>());
+
+            //Act & Assert
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.save(request));
+
+            verify(authService).getAuthenticatedUser();
+            verify(addressService).create(any(AddressRequest.class));
+            verify(categoryRepository).findAllById(any(Set.class));
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+
+            assertEquals("Category not found.", result.getMessage());
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_no_accessibility_types_exists() {
+            //Arrange
+            TouristPointRequest request = TouristPointFactory.createRequest();
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
+            when(addressService.create(request.addressRequest())).thenReturn(AddressFactory.createEntity());
+            when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
+            when(accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())).thenReturn(new ArrayList<>());
+
+            //Act & Assert
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.save(request));
+
+            verify(authService).getAuthenticatedUser();
+            verify(addressService).create(any(AddressRequest.class));
+            verify(categoryRepository).findAllById(any(Set.class));
+            verify(accessibilityTypesRepository).findAllById(any(Set.class));
+            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+
+            assertEquals("Accessibility not found.", result.getMessage());
         }
     }
 
