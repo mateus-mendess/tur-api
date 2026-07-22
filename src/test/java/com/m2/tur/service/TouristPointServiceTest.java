@@ -316,6 +316,7 @@ public class TouristPointServiceTest {
         void should_delete_tourist_point_with_success() {
             //Arrange
             TouristPoint touristPoint = TouristPointFactory.createEntity();
+            touristPoint.setPhotos(Set.of(PhotoFactory.createEntity()));
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
             doNothing().when(photoService).delete(any(UUID.class));
@@ -332,6 +333,7 @@ public class TouristPointServiceTest {
             var captured = captor.getValue();
 
             assertEquals(touristPoint.getUser(), captured.getUser());
+            assertEquals(touristPoint.getId(), captured.getId());
         }
 
         @Test
