@@ -4,8 +4,10 @@ import com.m2.tur.model.dto.request.AccessibilityUpdateRequest;
 import com.m2.tur.model.dto.response.AccessibilityTypesResponse;
 import com.m2.tur.service.AccessibilityTypesService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +35,22 @@ public class AccessibilityTypesController {
         return ResponseEntity.ok(accessibilityTypesService.findAllAccessibilityTypes());
     }
 
+    @Operation(summary = "Update tourist point accessibility types", description = """
+            Replaces the accessibility types of a specific tourist point.
+            Requires authentication. Only the owner can update.
+            """)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Accessibility types updated successfully."),
+            @ApiResponse(responseCode = "401", description = "User not authenticated."),
+            @ApiResponse(responseCode = "403", description = "User not allowed to update this tourist point."),
+            @ApiResponse(responseCode = "404", description = "Tourist point or accessibility type not found.")
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/tourist-point/{id}")
-    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody AccessibilityUpdateRequest request) {
+    public ResponseEntity<Void> update(
+            @Parameter(description = "ID of the tourist point to update accessibility types.", required = true)
+            @PathVariable UUID id,
+            @RequestBody AccessibilityUpdateRequest request) {
         accessibilityTypesService.update(id, request);
 
         return ResponseEntity.ok().build();
