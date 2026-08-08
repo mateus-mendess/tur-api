@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth -> auth
+                                .requestMatchers("/error").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{touristPointId}/comments").permitAll()
@@ -46,7 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/tourist-points/{touristPointId}/comments").permitAll()
-                                .requestMatchers(    "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
