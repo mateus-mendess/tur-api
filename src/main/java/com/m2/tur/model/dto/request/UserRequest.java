@@ -1,9 +1,12 @@
 package com.m2.tur.model.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+
+import java.util.Objects;
 
 public record UserRequest(
         @NotBlank(message = "name required.")
@@ -23,4 +26,9 @@ public record UserRequest(
 
         @NotBlank(message = "Password confirmation required.")
         String confirmPassword
-) {}
+) {
+        @AssertTrue(message = "Passwords must match")
+        public boolean isPasswordConfirmed() {
+                return Objects.equals(password, confirmPassword);
+        }
+}
