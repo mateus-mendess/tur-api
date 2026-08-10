@@ -13,6 +13,8 @@ public interface TouristPointMapper {
     TouristPoint toEntity(TouristPointRequest request);
 
     @Mapping(source = "address.state.name", target = "address.state")
+    @Mapping(source = "user.name", target = "userName")
+    @Mapping(source = "user.id", target = "userId")
     TouristPointResponse toResponse(TouristPoint touristPoint);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

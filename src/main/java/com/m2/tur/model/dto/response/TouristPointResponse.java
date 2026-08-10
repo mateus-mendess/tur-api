@@ -16,5 +16,9 @@ public record TouristPointResponse(
 
         Set<PhotoResponse> photos,
 
-        Set<CategoryResponse> categories
+        Set<CategoryResponse> categories,
+
+        String userName,
+
+        UUID userId
 ) {}
