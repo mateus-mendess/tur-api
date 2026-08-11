@@ -15,6 +15,8 @@ import org.springframework.web.client.RestClient;
 public class SupabaseConfig {
     private String url;
 
+    private String urlPublic;
+
     private String anonKey;
 
     private String serviceRoleKey;

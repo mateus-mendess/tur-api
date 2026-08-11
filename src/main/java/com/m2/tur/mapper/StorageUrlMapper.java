@@ -14,6 +14,6 @@ public class StorageUrlMapper {
 
     @Named("fullUrl")
     public String fullUrl(Photo photo) {
-        return supabaseConfig.getUrl() + photo.getPath();
+        return supabaseConfig.getUrlPublic() + supabaseConfig.getBucket() + "/" + photo.getPath();
     }
 }
