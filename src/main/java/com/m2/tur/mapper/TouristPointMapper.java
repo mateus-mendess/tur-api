@@ -8,7 +8,7 @@ import com.m2.tur.model.entity.Category;
 import com.m2.tur.model.entity.TouristPoint;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {PhotoMapper.class})
 public interface TouristPointMapper {
     TouristPoint toEntity(TouristPointRequest request);
 

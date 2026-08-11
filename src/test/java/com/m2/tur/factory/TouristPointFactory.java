@@ -76,7 +76,9 @@ public class TouristPointFactory {
                 Set.of(AccessibilityTypeFactory.createResponse()),
                 AddressFactory.createResponse(),
                 Set.of(PhotoFactory.createResponse()),
-                Set.of(CategoryFactory.createResponse())
+                Set.of(CategoryFactory.createResponse()),
+                UserFactory.createEntity().getName(),
+                UserFactory.createEntity().getId()
         );
     }
 }

@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public record PhotoResponse(
         UUID id,
-        String path
+        String url
 ) {}
