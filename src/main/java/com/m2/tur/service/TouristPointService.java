@@ -46,6 +46,16 @@ public class TouristPointService {
         );
     }
 
+    public List<TouristPointResponse> findMyTouristPoints() {
+        User user = authService.getAuthenticatedUser()
+                .orElseThrow(() -> new UnauthorizedException("User not logged in."));
+
+        return touristPointRepository.findByUserId(user.getId())
+                .stream()
+                .map(touristPointMapper::toResponse)
+                .toList();
+    }
+
     @Transactional
     public TouristPointResponse save(TouristPointRequest request) {
         User user = authService.getAuthenticatedUser()
