@@ -127,6 +127,43 @@ public class TouristPointServiceTest {
     }
 
     @Nested
+    class FindMyTouristPoints {
+        @Test
+        void should_return_tourist_points_with_success() {
+            //Arrange
+            User user = UserFactory.createEntity();
+            TouristPoint touristPoint = TouristPointFactory.createEntity();
+            TouristPointResponse response = TouristPointFactory.createResponse();
+
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(touristPointRepository.findByUserId(any(UUID.class))).thenReturn(List.of(touristPoint));
+            when(touristPointMapper.toResponse(any(TouristPoint.class))).thenReturn(response);
+
+            //Act & Assert
+            var result = assertDoesNotThrow(() -> touristPointService.findMyTouristPoints());
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository).findByUserId(user.getId());
+            verify(touristPointMapper).toResponse(touristPoint);
+
+            assertEquals(response, result.get(0));
+        }
+
+        @Test
+        void should_throw_unauthorized_exception_when_user_not_authenticated() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
+
+            //Act & Assert
+            assertThrows(UnauthorizedException.class, () -> touristPointService.findMyTouristPoints());
+
+            verify(authService).getAuthenticatedUser();
+            verify(touristPointRepository, times(0)).findByUserId(any(UUID.class));
+            verify(touristPointMapper, times(0)).toResponse(any(TouristPoint.class));
+        }
+    }
+
+    @Nested
     class Save {
         @Test
         void should_save_tourist_point_with_success() {
