@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -30,5 +31,5 @@ public class Favorite {
     private TouristPoint touristPoint;
 
     @CreationTimestamp
-    private LocalTime createdAt;
+    private LocalDateTime createdAt;
 }
