@@ -2,6 +2,7 @@ package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.request.UserRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.service.FavoriteService;
 import com.m2.tur.service.TouristPointService;
 import com.m2.tur.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "Users", description = "Endpoint for user registration.")
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final TouristPointService touristPointService;
+    private final FavoriteService favoriteService;
 
     @Operation(summary = "List the authenticated user's tourist points", description = """
             Returns all tourist points registered by the currently authenticated user.
@@ -36,8 +39,13 @@ public class UserController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/me/tourist-points")
-    public ResponseEntity<List<TouristPointResponse>> getMyTouristPoints() {
+    public ResponseEntity<List<TouristPointResponse>> listMyTouristPoints() {
         return ResponseEntity.ok(touristPointService.findMyTouristPoints());
+    }
+
+    @GetMapping("/me/favorites")
+    public ResponseEntity<List<TouristPointResponse>> listMyFavorites() {
+        return ResponseEntity.ok(favoriteService.findMyFavorites());
     }
 
     @Operation(summary = "Register user", description = """
@@ -54,4 +62,19 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PutMapping("/me/favorites/{touristPointId}")
+    public ResponseEntity<Void> addFavorite(@PathVariable UUID touristPointId) {
+        favoriteService.addFavorite(touristPointId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/me/favorites/{touristPointId}")
+    public ResponseEntity<Void> removeFavorite(@PathVariable UUID touristPointId) {
+        favoriteService.removeFavorite(touristPointId);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
