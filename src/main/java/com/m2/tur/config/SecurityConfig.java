@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tourist-points/{touristPointId}/comments").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/accessibilities").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/stats").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/tourist-points/{touristPointId}/comments").permitAll()
