@@ -11,5 +11,9 @@ public record AddressResponse(
 
         String state,
 
-        String zipcode
+        String zipcode,
+
+        Double latitude,
+
+        Double longitude
 ) {}

@@ -63,7 +63,9 @@ public class AddressFactory {
                 "Centro",
                 "Maceió",
                 "AL",
-                "57020-000"
+                "57020-000",
+                17.898000,
+                93.393013
         );
     }
 }
