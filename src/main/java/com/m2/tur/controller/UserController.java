@@ -1,5 +1,6 @@
 package com.m2.tur.controller;
 
+import com.m2.tur.model.dto.request.ChangePasswordRequest;
 import com.m2.tur.model.dto.request.UserRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.service.FavoriteService;
@@ -71,6 +72,13 @@ public class UserController {
         userService.save(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> changePassword(@RequestBody @Valid ChangePasswordRequest request) {
+        userService.changePassword(request);
+
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Add a tourist point to the authenticated user's favorites", description = """

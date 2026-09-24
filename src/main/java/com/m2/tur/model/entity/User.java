@@ -44,4 +44,9 @@ public class User {
         this.active = true;
         this.createdAt = LocalDateTime.now();
     }
+
+    @PreUpdate
+    private void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
