@@ -4,6 +4,7 @@ import com.m2.tur.infra.security.jwt.JwtService;
 import com.m2.tur.model.dto.request.AuthenticationRequest;
 import com.m2.tur.model.dto.response.AuthenticationResponse;
 import com.m2.tur.model.entity.User;
+import com.m2.tur.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Service
 public class AuthService {
     private final JwtService jwtService;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -37,6 +38,6 @@ public class AuthService {
             return Optional.empty();
         }
 
-        return Optional.of(userService.findEntityById(UUID.fromString(jwt.getSubject())));
+        return userRepository.findById(UUID.fromString(jwt.getSubject()));
     }
 }

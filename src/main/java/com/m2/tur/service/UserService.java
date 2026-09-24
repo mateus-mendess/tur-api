@@ -20,11 +20,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public User findEntityById(UUID id) {
-     return userRepository.findById(id)
-             .orElseThrow(() -> new NotFoundException("User not found"));
-    }
-
     @Transactional
     public void save(UserRequest request) {
         validate(request);

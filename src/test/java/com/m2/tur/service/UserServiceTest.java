@@ -39,32 +39,6 @@ public class UserServiceTest {
     private ArgumentCaptor<User> captor;
 
     @Nested
-    class FindEntityById {
-        @Test
-        void should_return_entity_with_success() {
-            //Arrange
-            User user = UserFactory.createEntity();
-
-            when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-
-            //Act & Assert
-            var result = assertDoesNotThrow(() -> userService.findEntityById(user.getId()));
-            assertEquals(user.getEmail(), result.getEmail());
-        }
-
-        @Test
-        void should_return_not_found_exception_when_entity_not_found() {
-            //Arrange
-            UUID id = UUID.randomUUID();
-
-            when(userRepository.findById(id)).thenReturn(Optional.empty());
-
-            //Act e Assert
-            assertThrows(NotFoundException.class, () -> userService.findEntityById(id));
-        }
-    }
-
-    @Nested
     class SaveEntity {
         @Test
         void should_save_entity_with_success() {
