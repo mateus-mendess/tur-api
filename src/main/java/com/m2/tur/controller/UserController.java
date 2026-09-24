@@ -1,8 +1,10 @@
 package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.request.ChangePasswordRequest;
+import com.m2.tur.model.dto.request.OtpCodeRequest;
 import com.m2.tur.model.dto.request.UserRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.dto.response.UserResponse;
 import com.m2.tur.service.FavoriteService;
 import com.m2.tur.service.TouristPointService;
 import com.m2.tur.service.UserService;
@@ -16,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,15 +72,24 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid request data or email already in use.")
     })
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody @Valid UserRequest request) {
-        userService.save(request);
+    public ResponseEntity<UserResponse> create(@RequestBody @Valid UserRequest request) {
+        UserResponse response = userService.save(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.id()).toUri();
+
+        return ResponseEntity.created(uri).body(response);
     }
 
     @PatchMapping
     public ResponseEntity<Void> changePassword(@RequestBody @Valid ChangePasswordRequest request) {
         userService.changePassword(request);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/verify")
+    public ResponseEntity<Void> verifyEmail(@PathVariable UUID id, @RequestBody @Valid OtpCodeRequest request) {
+        userService.verifyEmail(id, request);
 
         return ResponseEntity.noContent().build();
     }
