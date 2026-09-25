@@ -29,7 +29,7 @@ public class FavoriteController {
             @ApiResponse(responseCode = "401", description = "User not authenticated.")
     })
     @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/me/favorites")
+    @GetMapping
     public ResponseEntity<List<TouristPointResponse>> listMyFavorites() {
         return ResponseEntity.ok(favoriteService.findMyFavorites());
     }
@@ -44,7 +44,7 @@ public class FavoriteController {
             @ApiResponse(responseCode = "404", description = "Tourist point not found")
     })
     @SecurityRequirement(name = "bearerAuth")
-    @PutMapping("/me/favorites/{touristPointId}")
+    @PutMapping("/{touristPointId}")
     public ResponseEntity<Void> addFavorite(@PathVariable UUID touristPointId) {
         favoriteService.addFavorite(touristPointId);
 
@@ -60,7 +60,7 @@ public class FavoriteController {
             @ApiResponse(responseCode = "401", description = "User not authenticated")
     })
     @SecurityRequirement(name = "bearerAuth")
-    @DeleteMapping("/me/favorites/{touristPointId}")
+    @DeleteMapping("/{touristPointId}")
     public ResponseEntity<Void> removeFavorite(@PathVariable UUID touristPointId) {
         favoriteService.removeFavorite(touristPointId);
 

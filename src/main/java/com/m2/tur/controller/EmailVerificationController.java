@@ -1,14 +1,12 @@
 package com.m2.tur.controller;
 
 
-import com.m2.tur.model.dto.request.OtpCodeRequest;
+import com.m2.tur.model.dto.request.VerifyCodeRequest;
 import com.m2.tur.service.EmailVerificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -16,9 +14,9 @@ import java.util.UUID;
 public class EmailVerificationController {
     private final EmailVerificationService emailVerificationService;
 
-    @PatchMapping("/{id}/verify")
-    public ResponseEntity<Void> verifyEmail(@PathVariable UUID id, @RequestBody @Valid OtpCodeRequest request) {
-        emailVerificationService.verifyEmail(id, request);
+    @PatchMapping("/verify")
+    public ResponseEntity<Void> verifyEmail(@RequestBody @Valid VerifyCodeRequest request) {
+        emailVerificationService.verifyEmail(request);
 
         return ResponseEntity.noContent().build();
     }

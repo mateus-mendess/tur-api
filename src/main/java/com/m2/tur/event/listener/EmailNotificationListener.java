@@ -2,7 +2,7 @@ package com.m2.tur.event.listener;
 
 import com.m2.tur.event.UserRegisteredEvent;
 import com.m2.tur.service.EmailService;
-import com.m2.tur.service.OtpService;
+import com.m2.tur.service.OtpCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailNotificationListener {
     private final EmailService emailService;
-    private final OtpService otpService;
+    private final OtpCodeService otpService;
 
     @EventListener
     public void handleUserRegistered(UserRegisteredEvent event) {

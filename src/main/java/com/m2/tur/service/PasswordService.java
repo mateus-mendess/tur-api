@@ -24,7 +24,7 @@ public class PasswordService {
     private final UserRepository userRepository;
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
-    private final OtpService otpService;
+    private final OtpCodeService otpService;
     private final EmailService emailService;
     private final CacheManager cacheManager;
 
