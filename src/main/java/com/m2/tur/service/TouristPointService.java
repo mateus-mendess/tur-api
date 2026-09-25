@@ -11,6 +11,7 @@ import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.entity.*;
 import com.m2.tur.model.repository.AccessibilityTypesRepository;
 import com.m2.tur.model.repository.CategoryRepository;
+import com.m2.tur.model.repository.CommentRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class TouristPointService {
     private final PhotoService photoService;
     private final CategoryRepository categoryRepository;
     private final AccessibilityTypesRepository accessibilityTypesRepository;
+    private final CommentRepository commentRepository;
 
     public List<TouristPointResponse> findAll() {
         return touristPointRepository.findAll()
@@ -40,10 +42,12 @@ public class TouristPointService {
     }
 
     public TouristPointResponse findById(UUID id) {
-        return touristPointMapper.toResponse(
-                touristPointRepository.findById(id)
-                        .orElseThrow(() -> new NotFoundException("Tourist Point not found"))
-        );
+        TouristPoint touristPoint = touristPointRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("TouristPoint not found"));
+
+        Double averageRating = commentRepository.findAverageRatingByTouristPointId(id);
+
+        return touristPointMapper.toResponse(touristPoint, averageRating);
     }
 
     public List<TouristPointResponse> findMyTouristPoints() {

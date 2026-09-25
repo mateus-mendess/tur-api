@@ -17,6 +17,12 @@ public interface TouristPointMapper {
     @Mapping(source = "user.id", target = "userId")
     TouristPointResponse toResponse(TouristPoint touristPoint);
 
+    @Mapping(source = "touristPoint.address.state.name", target = "address.state")
+    @Mapping(source = "touristPoint.user.name", target = "userName")
+    @Mapping(source = "touristPoint.user.id", target = "userId")
+    @Mapping(source = "averageRating", target = "averageRating")
+    TouristPointResponse toResponse(TouristPoint touristPoint, Double averageRating);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(TouristPointUpdateRequest request, @MappingTarget TouristPoint touristPoint);
 }

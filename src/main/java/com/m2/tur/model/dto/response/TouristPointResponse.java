@@ -10,13 +10,15 @@ public record TouristPointResponse(
 
         String description,
 
+        Set<CategoryResponse> categories,
+
         Set<AccessibilityTypesResponse> accessibilityTypes,
 
         AddressResponse address,
 
         Set<PhotoResponse> photos,
 
-        Set<CategoryResponse> categories,
+        Double averageRating,
 
         String userName,
 
