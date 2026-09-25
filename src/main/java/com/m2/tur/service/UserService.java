@@ -26,10 +26,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final AuthService authService;
     private final ApplicationEventPublisher eventPublisher;
-    private final OtpService otpService;
-
     @Transactional
     public UserResponse save(UserRequest request) {
         validate(request);
@@ -43,29 +40,6 @@ public class UserService {
 
         return userMapper.toResponse(user);
     }
-
-    @Transactional
-    public void changePassword(ChangePasswordRequest request) {
-        User user = authService.getAuthenticatedUser()
-                .orElseThrow(() -> new UnauthorizedException("User not logged in."));
-
-        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new InvalidCurrentPasswordException("Current password is incorrect");
-        }
-
-        user.setPassword(passwordEncoder.encode(request.newPassword()));
-    }
-
-    @Transactional
-    public void verifyEmail(UUID userId, OtpCodeRequest request) {
-        otpService.verifyCode(userId, request.otpCode());
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        user.setActive(true);
-    }
-
     private void validate(UserRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException("Email already exists.", "email");
