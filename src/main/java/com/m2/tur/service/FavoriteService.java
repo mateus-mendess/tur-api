@@ -12,6 +12,8 @@ import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,15 +27,13 @@ public class FavoriteService {
     private final TouristPointMapper touristPointMapper;
     private final AuthService authService;
 
-    public List<TouristPointResponse> findMyFavorites() {
+    public Page<TouristPointResponse> findMyFavorites(Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User is not logged in"));
 
-        return favoriteRepository.findByUserId(user.getId())
-                .stream()
+        return favoriteRepository.findByUserId(user.getId(), pageable)
                 .map(Favorite::getTouristPoint)
-                .map(touristPointMapper::toResponse)
-                .toList();
+                .map(touristPointMapper::toResponse);
     }
 
     @Transactional

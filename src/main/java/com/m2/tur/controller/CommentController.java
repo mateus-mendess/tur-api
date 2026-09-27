@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +34,8 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "Comments retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID touristPointId) {
-        return ResponseEntity.ok(commentService.findAllComments(touristPointId));
+    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID touristPointId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(commentService.findAllComments(touristPointId, pageable).getContent());
     }
 
     @Operation(summary = "Post a comment about a tourist point.", description = """

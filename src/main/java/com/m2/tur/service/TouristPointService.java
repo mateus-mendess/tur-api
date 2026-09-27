@@ -15,6 +15,8 @@ import com.m2.tur.model.repository.CommentRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -34,11 +36,9 @@ public class TouristPointService {
     private final AccessibilityTypesRepository accessibilityTypesRepository;
     private final CommentRepository commentRepository;
 
-    public List<TouristPointResponse> findAll() {
-        return touristPointRepository.findAll()
-                .stream()
-                .map(touristPointMapper::toResponse)
-                .toList();
+    public Page<TouristPointResponse> findAll(Pageable pageable) {
+        return touristPointRepository.findAll(pageable)
+                .map(touristPointMapper::toResponse);
     }
 
     public TouristPointResponse findById(UUID id) {
@@ -50,14 +50,12 @@ public class TouristPointService {
         return touristPointMapper.toResponse(touristPoint, averageRating);
     }
 
-    public List<TouristPointResponse> findMyTouristPoints() {
+    public Page<TouristPointResponse> findMyTouristPoints(Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
 
-        return touristPointRepository.findByUserId(user.getId())
-                .stream()
-                .map(touristPointMapper::toResponse)
-                .toList();
+        return touristPointRepository.findByUserId(user.getId(), pageable)
+                .map(touristPointMapper::toResponse);
     }
 
     @Transactional

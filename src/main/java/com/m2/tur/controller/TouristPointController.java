@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -34,8 +36,8 @@ public class TouristPointController {
             @ApiResponse(responseCode = "200", description = "Tourist points retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<TouristPointResponse>> getTouristPoints() {
-        return ResponseEntity.ok(touristPointService.findAll());
+    public ResponseEntity<List<TouristPointResponse>> getTouristPoints(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(touristPointService.findAll(pageable).getContent());
     }
 
     @Operation(summary = "List a tourist point.", description = """

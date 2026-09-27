@@ -10,6 +10,8 @@ import com.m2.tur.model.repository.CommentRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,11 +24,9 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final TouristPointRepository touristPointRepository;
 
-    public List<CommentResponse> findAllComments(UUID touristPointId) {
-        return commentRepository.findAllByTouristPointId(touristPointId)
-                .stream()
-                .map(commentMapper::toResponse)
-                .toList();
+    public Page<CommentResponse> findAllComments(UUID touristPointId, Pageable pageable) {
+        return commentRepository.findAllByTouristPointId(touristPointId, pageable)
+                .map(commentMapper::toResponse);
     }
 
     @Transactional

@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +32,8 @@ public class FavoriteController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
-    public ResponseEntity<List<TouristPointResponse>> listMyFavorites() {
-        return ResponseEntity.ok(favoriteService.findMyFavorites());
+    public ResponseEntity<List<TouristPointResponse>> listMyFavorites(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(favoriteService.findMyFavorites(pageable).getContent());
     }
     @Operation(summary = "Add a tourist point to the authenticated user's favorites", description = """
             Marks the given tourist point as a favorite for the authenticated user.
