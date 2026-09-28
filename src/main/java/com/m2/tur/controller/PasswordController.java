@@ -28,7 +28,7 @@ public class PasswordController {
             """)
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Password changed successfully"),
-            @ApiResponse(responseCode = "401", description = "Current password does not match"),
+            @ApiResponse(responseCode = "401", description = "Current password does not match or Unauthenticated user"),
             @ApiResponse(responseCode = "400", description = "Validation error in the request body")
     })
     @SecurityRequirement(name = "bearerAuth")
