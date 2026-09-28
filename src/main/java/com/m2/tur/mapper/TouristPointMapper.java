@@ -5,9 +5,12 @@ import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.AccessibilityTypes;
+import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.Category;
 import com.m2.tur.model.entity.TouristPoint;
 import org.mapstruct.*;
+
+import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = {PhotoMapper.class})
 public interface TouristPointMapper {
@@ -22,5 +25,9 @@ public interface TouristPointMapper {
     TouristPointSummaryResponse toSummaryResponse(TouristPoint touristPoint);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntity(TouristPointUpdateRequest request, @MappingTarget TouristPoint touristPoint);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(source = "address", target = "address")
+    @Mapping(source = "categories", target = "categories")
+    @Mapping(source = "accessibilityTypes", target = "accessibilityTypes")
+    void updateEntity(TouristPointRequest request, Address address, Set<Category> categories, Set<AccessibilityTypes> accessibilityTypes, @MappingTarget TouristPoint touristPoint);
 }

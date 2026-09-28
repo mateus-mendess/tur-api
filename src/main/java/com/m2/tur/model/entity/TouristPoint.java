@@ -69,6 +69,11 @@ public class TouristPoint {
         this.createdAt = LocalDateTime.now();
     }
 
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void associate(User user,
                           Address address,
                           Set<Category> categories,

@@ -34,14 +34,6 @@ public class AddressService {
         return address;
     }
 
-    @Transactional
-    public void update(UUID touristPointId, AddressRequest request) {
-        TouristPoint touristPoint = touristPointRepository.findById(touristPointId)
-                .orElseThrow(() -> new NotFoundException("tourist point not found"));
-
-        fillAddress(request, touristPoint.getAddress());
-    }
-
     private void fillAddress(AddressRequest request, Address address) {
         State state = stateRepository.findById(request.stateId())
                 .orElseThrow(() -> new NotFoundException("state not found"));

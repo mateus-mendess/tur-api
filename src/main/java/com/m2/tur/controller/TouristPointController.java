@@ -91,8 +91,8 @@ public class TouristPointController {
             @ApiResponse(responseCode = "404", description = "Tourist point not found."),
     })
     @SecurityRequirement(name = "bearerAuth")
-    @PatchMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid TouristPointUpdateRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid TouristPointRequest request) {
         touristPointService.update(id, request);
 
         return ResponseEntity.ok().build();

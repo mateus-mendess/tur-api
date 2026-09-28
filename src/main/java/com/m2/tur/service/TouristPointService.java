@@ -92,7 +92,7 @@ public class TouristPointService {
 
     @Transactional
     @CacheEvict(cacheNames = "tourist-point", key = "#id")
-    public void update(UUID id, TouristPointUpdateRequest request) {
+    public void update(UUID id, TouristPointRequest request) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
 
@@ -103,9 +103,17 @@ public class TouristPointService {
             throw new ForbiddenException("You don't have permission to update this tourist point");
         }
 
-        touristPointMapper.updateEntity(request, touristPoint);
+        Address address = addressService.create(request.addressRequest());
 
-        touristPointRepository.save(touristPoint);
+        Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.categoriesIds()));
+
+        Set<AccessibilityTypes> accessibilityTypes = new HashSet<>(
+                accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())
+        );
+
+        validate(request, categories, accessibilityTypes);
+
+        touristPointMapper.updateEntity(request, address, categories, accessibilityTypes, touristPoint);
     }
 
     @Transactional

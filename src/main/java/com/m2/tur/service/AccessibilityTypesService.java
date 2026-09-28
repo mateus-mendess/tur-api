@@ -33,27 +33,4 @@ public class AccessibilityTypesService {
                 .map(accessibilityTypesMapper::toResponse)
                 .toList();
     }
-
-    @Transactional
-    public void update(UUID touristPointId, AccessibilityUpdateRequest request) {
-        User user = authService.getAuthenticatedUser()
-                .orElseThrow(() -> new UnauthorizedException("User not authenticated."));
-
-        TouristPoint touristPoint  = touristPointRepository.findById(touristPointId)
-                .orElseThrow(() -> new NotFoundException("Tourist Point not found."));
-
-        if (!touristPoint.getUser().equals(user)) {
-            throw new ForbiddenException("User not authorized.");
-        }
-
-        Set<AccessibilityTypes> accessibilityTypes = new HashSet<>(
-                accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())
-        );
-
-        if (accessibilityTypes.size() != request.accessibilityTypesIds().size()) {
-            throw new NotFoundException("Accessibility Types not found.");
-        }
-
-        touristPoint.setAccessibilityTypes(accessibilityTypes);
-    }
 }
