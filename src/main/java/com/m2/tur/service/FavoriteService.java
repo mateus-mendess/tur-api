@@ -4,6 +4,7 @@ import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.infra.exception.UnauthorizedException;
 import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.Favorite;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
@@ -27,13 +28,13 @@ public class FavoriteService {
     private final TouristPointMapper touristPointMapper;
     private final AuthService authService;
 
-    public Page<TouristPointResponse> findMyFavorites(Pageable pageable) {
+    public Page<TouristPointSummaryResponse> findMyFavorites(Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User is not logged in"));
 
         return favoriteRepository.findByUserId(user.getId(), pageable)
                 .map(Favorite::getTouristPoint)
-                .map(touristPointMapper::toResponse);
+                .map(touristPointMapper::toSummaryResponse);
     }
 
     @Transactional

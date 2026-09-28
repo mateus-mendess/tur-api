@@ -1,6 +1,7 @@
 package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.service.TouristPointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +34,7 @@ public class MeController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/tourist-points")
-    public ResponseEntity<List<TouristPointResponse>> listMyTouristPoints(@ParameterObject Pageable pageable) {
+    public ResponseEntity<List<TouristPointSummaryResponse>> listMyTouristPoints(@ParameterObject Pageable pageable) {
         return ResponseEntity.ok(touristPointService.findMyTouristPoints(pageable).getContent());
     }
 }

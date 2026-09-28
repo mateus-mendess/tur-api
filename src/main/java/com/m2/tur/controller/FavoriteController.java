@@ -1,6 +1,7 @@
 package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.service.FavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,7 +33,7 @@ public class FavoriteController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
-    public ResponseEntity<List<TouristPointResponse>> listMyFavorites(@ParameterObject Pageable pageable) {
+    public ResponseEntity<List<TouristPointSummaryResponse>> listMyFavorites(@ParameterObject Pageable pageable) {
         return ResponseEntity.ok(favoriteService.findMyFavorites(pageable).getContent());
     }
     @Operation(summary = "Add a tourist point to the authenticated user's favorites", description = """

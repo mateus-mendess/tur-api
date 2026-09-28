@@ -8,6 +8,7 @@ import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.request.TouristPointRequest;
 import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.*;
 import com.m2.tur.model.repository.AccessibilityTypesRepository;
 import com.m2.tur.model.repository.CategoryRepository;
@@ -36,9 +37,9 @@ public class TouristPointService {
     private final AccessibilityTypesRepository accessibilityTypesRepository;
     private final CommentRepository commentRepository;
 
-    public Page<TouristPointResponse> findAll(Pageable pageable) {
+    public Page<TouristPointSummaryResponse> findAll(Pageable pageable) {
         return touristPointRepository.findAll(pageable)
-                .map(touristPointMapper::toResponse);
+                .map(touristPointMapper::toSummaryResponse);
     }
 
     public TouristPointResponse findById(UUID id) {
@@ -50,12 +51,12 @@ public class TouristPointService {
         return touristPointMapper.toResponse(touristPoint, averageRating);
     }
 
-    public Page<TouristPointResponse> findMyTouristPoints(Pageable pageable) {
+    public Page<TouristPointSummaryResponse> findMyTouristPoints(Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
 
         return touristPointRepository.findByUserId(user.getId(), pageable)
-                .map(touristPointMapper::toResponse);
+                .map(touristPointMapper::toSummaryResponse);
     }
 
     @Transactional
@@ -76,7 +77,11 @@ public class TouristPointService {
         TouristPoint touristPoint = touristPointMapper.toEntity(request);
         touristPoint.associate(user, address, categories, accessibilityTypes);
 
-        return touristPointMapper.toResponse(touristPointRepository.save(touristPoint));
+        touristPointRepository.save(touristPoint);
+
+        Double averageRating = commentRepository.findAverageRatingByTouristPointId(touristPoint.getId());
+
+        return touristPointMapper.toResponse(touristPoint, averageRating);
     }
 
     @Transactional

@@ -3,6 +3,7 @@ package com.m2.tur.controller;
 import com.m2.tur.model.dto.request.TouristPointRequest;
 import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.service.TouristPointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +37,7 @@ public class TouristPointController {
             @ApiResponse(responseCode = "200", description = "Tourist points retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<TouristPointResponse>> getTouristPoints(@ParameterObject Pageable pageable) {
+    public ResponseEntity<List<TouristPointSummaryResponse>> getTouristPoints(@ParameterObject Pageable pageable) {
         return ResponseEntity.ok(touristPointService.findAll(pageable).getContent());
     }
 
