@@ -9,6 +9,7 @@ import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.State;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.repository.AddressRepository;
+import com.m2.tur.model.repository.StateRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class AddressService {
     private final GeocodingClient geocodingClient;
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
-    private final StateService stateService;
+    private final StateRepository stateRepository;
     private final TouristPointRepository touristPointRepository;
 
     public Address create(AddressRequest request) {
@@ -42,7 +43,9 @@ public class AddressService {
     }
 
     private void fillAddress(AddressRequest request, Address address) {
-        State state = stateService.findEntityById(request.stateId());
+        State state = stateRepository.findById(request.stateId())
+                .orElseThrow(() -> new NotFoundException("state not found"));
+
         address.setState(state);
 
         String fullAddress = "%s, %s, %s, %s, %s".formatted(

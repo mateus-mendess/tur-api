@@ -12,6 +12,8 @@ import com.m2.tur.model.repository.FavoriteRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public class FavoriteService {
     private final TouristPointMapper touristPointMapper;
     private final AuthService authService;
 
+    @Cacheable(cacheNames = "tourist-point-favorites", key = "#pageable")
     public Page<TouristPointSummaryResponse> findMyFavorites(Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User is not logged in"));
@@ -36,7 +39,7 @@ public class FavoriteService {
                 .map(Favorite::getTouristPoint)
                 .map(touristPointMapper::toSummaryResponse);
     }
-
+    @CacheEvict(cacheNames = "tourist-point-favorites", allEntries = true)
     @Transactional
     public void addFavorite(UUID touristPointId) {
         User user = authService.getAuthenticatedUser()
@@ -60,6 +63,7 @@ public class FavoriteService {
         }
     }
 
+    @CacheEvict(cacheNames = "tourist-point-favorites", allEntries = true)
     @Transactional
     public void removeFavorite(UUID touristPointId) {
         User user = authService.getAuthenticatedUser()

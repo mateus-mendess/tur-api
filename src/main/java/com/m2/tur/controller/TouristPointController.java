@@ -93,7 +93,7 @@ public class TouristPointController {
     @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid TouristPointUpdateRequest request) {
-        touristPointService.update(request, id);
+        touristPointService.update(id, request);
 
         return ResponseEntity.ok().build();
     }

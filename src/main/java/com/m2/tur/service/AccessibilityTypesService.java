@@ -13,6 +13,7 @@ import com.m2.tur.model.repository.AccessibilityTypesRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class AccessibilityTypesService {
     private final TouristPointRepository  touristPointRepository;
     private final AuthService authService;
 
+    @Cacheable(cacheNames = "accessibility-types")
     public List<AccessibilityTypesResponse> findAllAccessibilityTypes() {
         return accessibilityTypesRepository.findAll()
                 .stream()

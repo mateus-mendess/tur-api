@@ -10,6 +10,8 @@ import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
     private final AuthService authService;
 
+    @Cacheable(cacheNames = "categories")
     public List<CategoryResponse> findAllCategories() {
         return categoryRepository.findAll()
                 .stream()
@@ -30,6 +33,7 @@ public class CategoryService {
                 .toList();
     }
 
+    @CacheEvict(cacheNames = "categories", allEntries = true)
     @Transactional
     public void save(CategoryRequest request) {
         validate(request);

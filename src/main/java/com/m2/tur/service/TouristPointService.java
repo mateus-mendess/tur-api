@@ -16,6 +16,8 @@ import com.m2.tur.model.repository.CommentRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,11 +39,13 @@ public class TouristPointService {
     private final AccessibilityTypesRepository accessibilityTypesRepository;
     private final CommentRepository commentRepository;
 
+    @Cacheable(cacheNames = "tourist-point-summary", key = "#pageable")
     public Page<TouristPointSummaryResponse> findAll(Pageable pageable) {
         return touristPointRepository.findAll(pageable)
                 .map(touristPointMapper::toSummaryResponse);
     }
 
+    @Cacheable(cacheNames = "tourist-point", key = "#id")
     public TouristPointResponse findById(UUID id) {
         TouristPoint touristPoint = touristPointRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("TouristPoint not found"));
@@ -51,6 +55,7 @@ public class TouristPointService {
         return touristPointMapper.toResponse(touristPoint, averageRating);
     }
 
+    @Cacheable(cacheNames = "tourist-point-summary", key = "#pageable")
     public Page<TouristPointSummaryResponse> findMyTouristPoints(Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
@@ -60,6 +65,7 @@ public class TouristPointService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true)
     public TouristPointResponse save(TouristPointRequest request) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
@@ -85,7 +91,8 @@ public class TouristPointService {
     }
 
     @Transactional
-    public void update(TouristPointUpdateRequest request, UUID id) {
+    @CacheEvict(cacheNames = "tourist-point", key = "#id")
+    public void update(UUID id, TouristPointUpdateRequest request) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
 
@@ -102,6 +109,7 @@ public class TouristPointService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "tourist-point", key = "#id")
     public void delete(UUID id) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
