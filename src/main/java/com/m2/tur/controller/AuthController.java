@@ -54,6 +54,16 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Get current authenticated user", description = """
+        Returns the id of the currently authenticated user, resolved
+        from the JWT (cookie or header). Used by the frontend to check
+        whether a valid session exists without needing to inspect the
+        token directly.
+        """)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully logged out and JWT cookie cleared"),
+            @ApiResponse(responseCode = "401", description = "nauthorized - No active session or invalid token provided")
+    })
     @GetMapping("/me")
     public ResponseEntity<UUID> me() {
         return ResponseEntity.ok().body(authService.getMe());
