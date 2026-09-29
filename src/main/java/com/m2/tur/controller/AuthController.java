@@ -6,6 +6,7 @@ import com.m2.tur.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -28,11 +29,12 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "Authenticate user", description = """
-            Authenticates a user with email and password.
-            Returns a signed JWT token to be used in protected endpoints.
+        Authenticates a user with email and password.
+        Upon successful authentication, a signed JWT token is securely set in an HttpOnly cookie 
+        to be used for subsequent requests to protected endpoints.
             """)
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Authentication successful. Returns a signed JWT token."),
+            @ApiResponse(responseCode = "200", description = "Authentication successful. The JWT token is set via the Set-Cookie header."),
             @ApiResponse(responseCode = "401", description = "Invalid email or password.")
     })
     @PostMapping("/login")
@@ -42,6 +44,15 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Logs out the current user", description = """
+            Processes the user logout by invalidating the current authentication context and clearing the HttpOnly JWT cookie.
+            After a successful response, the client will no longer have access to protected resources until a new login is performed.
+            """)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully logged out and JWT cookie cleared"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - No active session or invalid token provided")
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         authService.logout(response);
