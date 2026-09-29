@@ -1,7 +1,6 @@
 package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.request.AuthenticationRequest;
-import com.m2.tur.model.dto.response.AuthenticationResponse;
 import com.m2.tur.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,15 +10,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
+import java.util.UUID;
 
 @Tag(name = "Auth", description = "Endpoint for user authentication and JWT token generation.")
 @RequiredArgsConstructor
@@ -38,7 +32,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Invalid email or password.")
     })
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
         authService.authenticate(request, response);
 
         return ResponseEntity.ok().build();
@@ -58,5 +52,10 @@ public class AuthController {
         authService.logout(response);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UUID> me() {
+        return ResponseEntity.ok().body(authService.getMe());
     }
 }
