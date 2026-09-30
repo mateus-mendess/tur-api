@@ -1,5 +1,6 @@
 package com.m2.tur.controller;
 
+import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.service.TouristPointService;
@@ -34,7 +35,7 @@ public class MeController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/tourist-points")
-    public ResponseEntity<List<TouristPointSummaryResponse>> listMyTouristPoints(@ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(touristPointService.findMyTouristPoints(pageable).getContent());
+    public ResponseEntity<List<TouristPointSummaryResponse>> listMyTouristPoints(TouristPointFilterRequest request, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(touristPointService.findMyTouristPoints(request, pageable).getContent());
     }
 }

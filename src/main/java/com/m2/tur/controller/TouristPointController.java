@@ -1,5 +1,6 @@
 package com.m2.tur.controller;
 
+import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.request.TouristPointRequest;
 import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
@@ -37,8 +38,8 @@ public class TouristPointController {
             @ApiResponse(responseCode = "200", description = "Tourist points retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<TouristPointSummaryResponse>> getTouristPoints(@ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(touristPointService.findAll(pageable).getContent());
+    public ResponseEntity<List<TouristPointSummaryResponse>> getTouristPoints(TouristPointFilterRequest request, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(touristPointService.findAll(request, pageable).getContent());
     }
 
     @Operation(summary = "List a tourist point.", description = """

@@ -1,29 +1,25 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.BusinessException;
 import com.m2.tur.infra.exception.ForbiddenException;
 import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.infra.exception.UnauthorizedException;
 import com.m2.tur.mapper.TouristPointMapper;
+import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.request.TouristPointRequest;
-import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.*;
-import com.m2.tur.model.repository.AccessibilityTypesRepository;
-import com.m2.tur.model.repository.CategoryRepository;
-import com.m2.tur.model.repository.CommentRepository;
-import com.m2.tur.model.repository.TouristPointRepository;
+import com.m2.tur.model.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,8 +36,13 @@ public class TouristPointService {
     private final CommentRepository commentRepository;
 
     @Cacheable(cacheNames = "tourist-point-summary", key = "#pageable")
-    public Page<TouristPointSummaryResponse> findAll(Pageable pageable) {
-        return touristPointRepository.findAll(pageable)
+    public Page<TouristPointSummaryResponse> findAll(TouristPointFilterRequest request, Pageable pageable) {
+        Specification<TouristPoint> spec = TouristPointSpecification.byCity(request.city())
+                .and(TouristPointSpecification.byState(request.stateId()))
+                .and(TouristPointSpecification.byCategory(request.categoryId()))
+                .and(TouristPointSpecification.byAccessibility(request.accessibilityId()));
+
+        return touristPointRepository.findAll(spec, pageable)
                 .map(touristPointMapper::toSummaryResponse);
     }
 
@@ -56,11 +57,17 @@ public class TouristPointService {
     }
 
     @Cacheable(cacheNames = "tourist-point-summary", key = "#pageable")
-    public Page<TouristPointSummaryResponse> findMyTouristPoints(Pageable pageable) {
+    public Page<TouristPointSummaryResponse> findMyTouristPoints(TouristPointFilterRequest request, Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
 
-        return touristPointRepository.findByUserId(user.getId(), pageable)
+        Specification<TouristPoint> spec = TouristPointSpecification.belongsToUser(user.getId())
+                .and(TouristPointSpecification.byCity(request.city()))
+                .and(TouristPointSpecification.byState(request.stateId()))
+                .and(TouristPointSpecification.byCategory(request.categoryId()))
+                .and(TouristPointSpecification.byAccessibility(request.accessibilityId()));
+
+        return touristPointRepository.findAll(spec, pageable)
                 .map(touristPointMapper::toSummaryResponse);
     }
 
