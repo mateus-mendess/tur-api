@@ -33,9 +33,10 @@ public class GeocodingClient {
         this.restClient = RestClient.builder()
                 .baseUrl(config.getGeocodingUrl())
                 .defaultHeader("User-Agent", config.getUserAgent())
+                .requestFactory(factory)
                 .build();
     }
-    
+
     public CoordinatesResponse getCoordinates(String fullAddress) {
         try {
             JsonNode[] response = restClient.get()
