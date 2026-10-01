@@ -68,6 +68,7 @@ public class TouristPointController {
             @ApiResponse(responseCode = "404", description = "State not found"),
             @ApiResponse(responseCode = "503", description = "Failed to retrieve coordinates from geocoding service."),
     })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<TouristPointResponse> create(@RequestBody @Valid TouristPointRequest request) {
         TouristPointResponse response = touristPointService.save(request);

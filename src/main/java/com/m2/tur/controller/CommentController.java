@@ -47,7 +47,6 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "Invalid request data."),
             @ApiResponse(responseCode = "404", description = "Tourist point not found.")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<Void> create(@PathVariable UUID touristPointId, @RequestBody @Valid CommentRequest request) {
         commentService.save(touristPointId, request);
