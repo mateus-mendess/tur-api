@@ -71,6 +71,6 @@ public class PasswordService {
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
 
-        cache.evict(user.getEmail());
+        cache.evict(request.token());
     }
 }
