@@ -8,16 +8,13 @@ import com.m2.tur.model.entity.Comment;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.repository.CommentRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -26,9 +23,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final TouristPointRepository touristPointRepository;
-    private final CacheManager cacheManager;
 
-    @Cacheable(cacheNames = "'comments-' + #touristPointId", key = "#pageable")
     public Page<CommentResponse> findAllComments(UUID touristPointId, Pageable pageable) {
         return commentRepository.findAllByTouristPointId(touristPointId, pageable)
                 .map(commentMapper::toResponse);
@@ -44,7 +39,5 @@ public class CommentService {
         comment.setTouristPoint(touristPoint);
 
         commentRepository.save(comment);
-
-        cacheManager.getCache("comments-" + touristPoint.getId()).clear();
     }
 }

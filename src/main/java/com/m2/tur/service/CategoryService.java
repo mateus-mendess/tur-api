@@ -8,15 +8,13 @@ import com.m2.tur.model.dto.response.CategoryResponse;
 import com.m2.tur.model.entity.Category;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.CategoryRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
