@@ -31,7 +31,6 @@ public class FavoriteService {
     private final TouristPointMapper touristPointMapper;
     private final AuthService authService;
 
-    @Cacheable(cacheNames = "tourist-point-favorites", key = "#pageable")
     public Page<TouristPointSummaryResponse> findMyFavorites(TouristPointFilterRequest request, Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User is not logged in"));
@@ -45,7 +44,6 @@ public class FavoriteService {
         return touristPointRepository.findAll(spec, pageable)
                 .map(touristPointMapper::toSummaryResponse);
     }
-    @CacheEvict(cacheNames = "tourist-point-favorites", allEntries = true)
     @Transactional
     public void addFavorite(UUID touristPointId) {
         User user = authService.getAuthenticatedUser()
@@ -69,7 +67,6 @@ public class FavoriteService {
         }
     }
 
-    @CacheEvict(cacheNames = "tourist-point-favorites", allEntries = true)
     @Transactional
     public void removeFavorite(UUID touristPointId) {
         User user = authService.getAuthenticatedUser()

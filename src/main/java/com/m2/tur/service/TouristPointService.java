@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -56,7 +57,6 @@ public class TouristPointService {
         return touristPointMapper.toResponse(touristPoint, averageRating);
     }
 
-    @Cacheable(cacheNames = "tourist-point-summary", key = "#pageable")
     public Page<TouristPointSummaryResponse> findMyTouristPoints(TouristPointFilterRequest request, Pageable pageable) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
@@ -98,7 +98,10 @@ public class TouristPointService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "tourist-point", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "tourist-point", key = "#id")
+    })
     public void update(UUID id, TouristPointRequest request) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
@@ -124,7 +127,10 @@ public class TouristPointService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "tourist-point", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "tourist-point", key = "#id")
+    })
     public void delete(UUID id) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
