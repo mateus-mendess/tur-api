@@ -13,10 +13,18 @@ public class CacheManagerConfig {
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager();
-        manager.registerCustomCache("code",
-                Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(10)).build());
-        manager.registerCustomCache("password-reset-token",
-                Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(5)).build());
+
+        manager.setCaffeine(Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofHours(1))
+                .maximumSize(10_000)
+        );
+
+        manager.registerCustomCache("user-registration-cache", Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofMinutes(10)).build());
+        manager.registerCustomCache("password-reset-cache", Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofMinutes(10)).build());
+        manager.registerCustomCache("password-reset-token", Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofMinutes(5)).build());
 
         return manager;
     }

@@ -15,7 +15,7 @@ public class EmailNotificationListener {
 
     @EventListener
     public void handleUserRegistered(UserRegisteredEvent event) {
-        String otpCode = otpService.generateOtpCode(event.userId());
+        String otpCode = otpService.generateUserRegistrationCode(event.userId());
 
         emailService.sendVerificationEmail(event.email(), otpCode);
     }
