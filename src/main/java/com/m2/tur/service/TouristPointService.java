@@ -10,7 +10,7 @@ import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.*;
 import com.m2.tur.model.repository.*;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,7 +36,7 @@ public class TouristPointService {
     private final AccessibilityTypesRepository accessibilityTypesRepository;
     private final CommentRepository commentRepository;
 
-    @Cacheable(cacheNames = "tourist-point-summary", key = "#pageable")
+    @Cacheable(cacheNames = "tourist-point-summary", key = "#request + '-' + #pageable")
     public Page<TouristPointSummaryResponse> findAll(TouristPointFilterRequest request, Pageable pageable) {
         Specification<TouristPoint> spec = TouristPointSpecification.byCity(request.city())
                 .and(TouristPointSpecification.byState(request.stateId()))
@@ -142,9 +142,7 @@ public class TouristPointService {
             throw new ForbiddenException("You don't have permission to update this tourist point");
         }
 
-        for (Photo photo : touristPoint.getPhotos()) {
-            photoService.delete(photo.getId());
-        }
+        photoService.deleteByTouristPoint(touristPoint);
 
         touristPointRepository.delete(touristPoint);
     }

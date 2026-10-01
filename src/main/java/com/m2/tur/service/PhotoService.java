@@ -81,6 +81,14 @@ public class PhotoService {
         cacheManager.getCache("tourist-point").evict(touristPoint.getId());
     }
 
+    public void deleteByTouristPoint(TouristPoint touristPoint) {
+        for (Photo photo : touristPoint.getPhotos()) {
+            supabaseStorageService.delete(photo.getPath());
+        }
+
+        photoRepository.deleteAll(touristPoint.getPhotos());
+    }
+
     private void validate(MultipartFile file, UUID touristPointId) {
         if (file == null || file.isEmpty()) {
             throw new InvalidFileException("File cannot be empty");
