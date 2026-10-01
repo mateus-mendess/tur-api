@@ -9,7 +9,7 @@ import com.m2.tur.model.dto.request.ResetPasswordRequest;
 import com.m2.tur.model.dto.request.VerifyCodeRequest;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -43,7 +43,7 @@ public class PasswordService {
     public void requestPasswordReset(String email) {
         userRepository.findByEmail(email)
                 .ifPresent(user -> {
-                    String code = otpService.generateOtpCode(user.getId());
+                    String code = otpService.generatePasswordResetCode(user.getId());
                     emailService.sendResetPasswordEmail(email, code);
                 });
     }
@@ -52,7 +52,7 @@ public class PasswordService {
         User user = userRepository.findByEmail(request.email())
                         .orElseThrow(() -> new InvalidOtpCodeException("Invalid code"));
 
-        otpService.verifyCode(user.getId(), request.code());
+        otpService.verifyPasswordResetCode(user.getId(), request.code());
 
         String token = UUID.randomUUID().toString();
 
@@ -70,5 +70,7 @@ public class PasswordService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
+
+        cache.evict(user.getEmail());
     }
 }
