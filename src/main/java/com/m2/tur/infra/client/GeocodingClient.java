@@ -1,9 +1,14 @@
 package com.m2.tur.infra.client;
 
+import com.m2.tur.config.GeocodingConfig;
 import com.m2.tur.infra.exception.GeocodingException;
 import com.m2.tur.model.dto.response.CoordinatesResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.util.UriBuilder;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -14,40 +19,45 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
-@RequiredArgsConstructor
 @Service
 public class GeocodingClient {
-    private static final String NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-    private final ObjectMapper objectMapper;
+    private final RestClient restClient;
 
+    public GeocodingClient(GeocodingConfig config) {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(5));
+        factory.setReadTimeout(Duration.ofSeconds(5));
+
+        this.restClient = RestClient.builder()
+                .baseUrl(config.getGeocodingUrl())
+                .defaultHeader("User-Agent", config.getUserAgent())
+                .build();
+    }
+    
     public CoordinatesResponse getCoordinates(String fullAddress) {
         try {
-            String url = String.format("%s?q=%s&format=jsonv2&addressdetails=1",
-                    NOMINATIM_URL,
-                    encode(fullAddress)
-            );
+            JsonNode[] response = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("q", fullAddress)
+                            .queryParam("format", "jsonv2")
+                            .queryParam("addressdetails", "1")
+                            .build()
+                    )
+                    .retrieve()
+                    .body(JsonNode[].class);
 
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("User-Agent", "SolidarityNetwork/1.0 (mendes.profissional12@gmail.com)")
-                    .GET()
-                    .build();
+            if (response == null || response.length == 0) {
+                throw new GeocodingException("No coordinates found");
+            }
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            JsonNode root = objectMapper.readTree(response.body());
-            Double latitude = root.get(0).get("lat").asDouble();
-            Double longitude = root.get(0).get("lon").asDouble();
+            Double latitude = response[0].get("lat").asDouble();
+            Double longitude = response[0].get("lon").asDouble();
 
             return new CoordinatesResponse(latitude, longitude);
-        } catch (IOException | InterruptedException e) {
-            throw new GeocodingException("Failed to retrieve coordinates.");
+        } catch (RestClientException e) {
+            throw new GeocodingException("Failed to retrieve coordinates: " + e.getMessage());
         }
-    }
-
-    private String encode(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
