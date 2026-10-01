@@ -1,8 +1,13 @@
 package com.m2.tur.service;
 
+import com.m2.tur.infra.exception.EmailException;
+import jakarta.mail.MessageRemovedException;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -31,13 +36,19 @@ public class EmailService {
         send(email, "Reset your password - tur.", htmlBody);
     }
 
-    private void send(String to, String subject, String text) {
-        var message = new SimpleMailMessage();
-        message.setFrom("noreply@tur.com");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+    private void send(String to, String subject, String htmlBody) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        mailSender.send(message);
+            helper.setFrom("noreply@tur.com");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new EmailException("Failed to send verification email: " + e.getMessage());
+        }
     }
 }

@@ -56,4 +56,9 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleInvalidOtpCodeException(InvalidOtpCodeException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
     }
+
+    @ExceptionHandler(EmailException.class)
+    public ProblemDetail handleEmailException(EmailException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
 }
