@@ -25,7 +25,7 @@ public class PhotoService {
     private final PhotoMapper photoMapper;
     private final TouristPointRepository touristPointRepository;
     private final AuthService authService;
-    private final SupabaseStorageClient supabaseStorageService;
+    private final SupabaseStorageClient supabaseStorageClient;
     private final CacheManager cacheManager;
 
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024L;
@@ -46,7 +46,7 @@ public class PhotoService {
 
         validate(file, touristPointId);
 
-        String path = supabaseStorageService.upload(file);
+        String path = supabaseStorageClient.upload(file);
 
         try {
             Photo photo = photoMapper.toEntity(path);
@@ -54,7 +54,7 @@ public class PhotoService {
 
             photoRepository.save(photo);
         } catch (Exception e) {
-            supabaseStorageService.delete(path);
+            supabaseStorageClient.delete(path);
             throw e;
         }
     }
@@ -74,7 +74,7 @@ public class PhotoService {
             throw new ForbiddenException("User not allowed to save photos.");
         }
 
-        supabaseStorageService.delete(photo.getPath());
+        supabaseStorageClient.delete(photo.getPath());
 
         photoRepository.delete(photo);
 
@@ -83,7 +83,7 @@ public class PhotoService {
 
     public void deleteByTouristPoint(TouristPoint touristPoint) {
         for (Photo photo : touristPoint.getPhotos()) {
-            supabaseStorageService.delete(photo.getPath());
+            supabaseStorageClient.delete(photo.getPath());
         }
 
         photoRepository.deleteAll(touristPoint.getPhotos());

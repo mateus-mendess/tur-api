@@ -2,7 +2,6 @@ package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.request.TouristPointRequest;
-import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.service.TouristPointService;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;

@@ -2,6 +2,8 @@ package com.m2.tur.service;
 
 import com.m2.tur.infra.security.jwt.JwtService;
 import com.m2.tur.model.dto.request.AuthenticationRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,13 +41,14 @@ public class AuthServiceTest {
             //Arrange
             AuthenticationRequest request = new AuthenticationRequest("test@email.com", "Password123@");
             Authentication authentication = mock(Authentication.class);
+            HttpServletResponse response = mock(HttpServletResponse.class);
 
             when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password())))
                     .thenReturn(authentication);
             when(jwtService.generateToken(authentication)).thenReturn("token");
 
             //Act & Assert
-            assertDoesNotThrow(() -> authService.authenticate(request));
+            assertDoesNotThrow(() -> authService.authenticate(request, response));
             verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
             verify(jwtService).generateToken(any(Authentication.class));
         }
@@ -53,11 +56,14 @@ public class AuthServiceTest {
         @Test
         void should_throw_authentication_exception_when_credentials_are_invalid() {
             //Arrange
+            AuthenticationRequest request = new AuthenticationRequest("test@gmail.com", "Password123@");
+            HttpServletResponse response = mock(HttpServletResponse.class);
+
             when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                     .thenThrow(new BadCredentialsException("invalid Credential"));
 
             //Act & Assert
-            assertThrows(BadCredentialsException.class, () -> authService.authenticate(new AuthenticationRequest("test@gmail.com", "Password123@")));
+            assertThrows(BadCredentialsException.class, () -> authService.authenticate(request, response));
             verify(jwtService, times(0)).generateToken(any(Authentication.class));
         }
     }

@@ -18,6 +18,10 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,15 +56,17 @@ public class CommentServiceTest {
             UUID touristPointId = UUID.randomUUID();
             Comment comment = CommentFactory.createEntity();
             CommentResponse response = CommentFactory.createResponse();
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Comment> page = new PageImpl<>(List.of(comment), pageable, 10);
 
-            when(commentRepository.findAllByTouristPointId(touristPointId)).thenReturn(List.of(comment));
+            when(commentRepository.findAllByTouristPointId(any(UUID.class), any(Pageable.class))).thenReturn(page);
             when(commentMapper.toResponse(comment)).thenReturn(response);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> commentService.findAllComments(touristPointId));
+            var result = assertDoesNotThrow(() -> commentService.findAllComments(touristPointId, pageable));
 
             assertNotNull(result);
-            assertInstanceOf(CommentResponse.class, result.get(0));
+            assertInstanceOf(CommentResponse.class, result.getContent().get(0));
         }
     }
 

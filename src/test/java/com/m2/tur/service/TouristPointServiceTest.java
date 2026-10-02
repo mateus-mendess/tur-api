@@ -1,20 +1,19 @@
 package com.m2.tur.service;
 
-import com.m2.tur.factory.AddressFactory;
-import com.m2.tur.factory.PhotoFactory;
-import com.m2.tur.factory.TouristPointFactory;
-import com.m2.tur.factory.UserFactory;
+import com.m2.tur.factory.*;
 import com.m2.tur.infra.exception.*;
 import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.request.AddressRequest;
+import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.request.TouristPointRequest;
-import com.m2.tur.model.dto.request.TouristPointUpdateRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
-import com.m2.tur.model.entity.TouristPoint;
-import com.m2.tur.model.entity.User;
+import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
+import com.m2.tur.model.entity.*;
 import com.m2.tur.model.repository.AccessibilityTypesRepository;
 import com.m2.tur.model.repository.CategoryRepository;
+import com.m2.tur.model.repository.CommentRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +22,16 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class TouristPointServiceTest {
@@ -53,42 +56,69 @@ public class TouristPointServiceTest {
     @Mock
     private AccessibilityTypesRepository accessibilityTypesRepository;
 
+    @Mock
+    private CommentRepository commentRepository;
+
     @InjectMocks
     private TouristPointService touristPointService;
 
     @Captor
     private ArgumentCaptor<TouristPoint> captor;
 
+    private TouristPointRequest touristPointRequest;
+    private TouristPointFilterRequest filterRequest;
+    private TouristPoint touristPoint;
+    private UUID id;
+    private User user;
+    private Address address;
+    private Set<Category> categories;
+    private Set<AccessibilityTypes> accessibilityTypes;
+    private TouristPointResponse touristPointResponse;
+    private TouristPointSummaryResponse touristPointSummaryResponse;
+
+    @BeforeEach
+    void setUp() {
+        touristPointRequest = TouristPointFactory.createRequest();
+        filterRequest = TouristPointFactory.createFilterRequest();
+        touristPoint = TouristPointFactory.createEntity();
+        id = touristPoint.getId();
+        user = touristPoint.getUser();
+        address = touristPoint.getAddress();
+        categories = touristPoint.getCategories();
+        accessibilityTypes = touristPoint.getAccessibilityTypes();
+        touristPointResponse = TouristPointFactory.createResponse();
+        touristPointSummaryResponse = TouristPointFactory.createSummaryResponse();
+    }
+
     @Nested
     class FindAll {
         @Test
         void should_return_all_tourist_points_with_success() {
             //Arrange
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-            TouristPointResponse response = TouristPointFactory.createResponse();
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<TouristPoint> page = new PageImpl<>(List.of(touristPoint), pageable, 10);
 
-            when(touristPointRepository.findAll()).thenReturn(List.of(touristPoint));
-            when(touristPointMapper.toResponse(touristPoint)).thenReturn(response);
+            when(touristPointRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+            when(touristPointMapper.toSummaryResponse(touristPoint)).thenReturn(touristPointSummaryResponse);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> touristPointService.findAll());
-
-            verify(touristPointRepository).findAll();
-            verify(touristPointMapper).toResponse(any(TouristPoint.class));
+            var result = touristPointService.findAll(filterRequest, pageable);
 
             assertNotNull(result);
-            assertInstanceOf(TouristPointResponse.class, result.get(0));
+            assertInstanceOf(TouristPointSummaryResponse.class, result.getContent().get(0));
         }
 
         @Test
         void should_return_empty_list_when_no_tourist_points_exist() {
             //Arrange
-            when(touristPointRepository.findAll()).thenReturn(Collections.emptyList());
+            Pageable pageable = PageRequest.of(0, 10);
+
+            when(touristPointRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(Page.empty());
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> touristPointService.findAll());
+            var result = touristPointService.findAll(filterRequest, pageable);
 
-            verify(touristPointRepository).findAll();
+            verify(touristPointRepository).findAll(any(Specification.class), any(Pageable.class));
 
             assertTrue(result.isEmpty());
         }
@@ -99,19 +129,17 @@ public class TouristPointServiceTest {
         @Test
         void should_return_tourist_point_with_success() {
             //Arrange
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-            TouristPointResponse response = TouristPointFactory.createResponse();
-
             when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
-            when(touristPointMapper.toResponse(touristPoint)).thenReturn(response);
+            when(commentRepository.findAverageRatingByTouristPointId(any(UUID.class))).thenReturn(touristPointResponse.averageRating());
+            when(touristPointMapper.toResponse(touristPoint, touristPointResponse.averageRating())).thenReturn(touristPointResponse);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> touristPointService.findById(touristPoint.getId()));
+            var result = touristPointService.findById(touristPoint.getId());
 
-            verify(touristPointRepository).findById(any(UUID.class));
+            verify(touristPointMapper).toResponse(any(TouristPoint.class), any(Double.class));
 
-            assertInstanceOf(TouristPointResponse.class, result);
-            assertEquals(response.id(), result.id());
+            assertEquals(touristPointResponse.id(), result.id());
+            assertNotNull(result.averageRating());
         }
 
         @Test
@@ -121,8 +149,6 @@ public class TouristPointServiceTest {
 
             //Act & Assert
             assertThrows(NotFoundException.class, () -> touristPointService.findById(UUID.randomUUID()));
-
-            verify(touristPointMapper, times(0)).toResponse(any(TouristPoint.class));
         }
     }
 
@@ -131,35 +157,28 @@ public class TouristPointServiceTest {
         @Test
         void should_return_tourist_points_with_success() {
             //Arrange
-            User user = UserFactory.createEntity();
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-            TouristPointResponse response = TouristPointFactory.createResponse();
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<TouristPoint> page = new PageImpl<>(List.of(touristPoint), pageable, 10);
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
-            when(touristPointRepository.findByUserId(any(UUID.class))).thenReturn(List.of(touristPoint));
-            when(touristPointMapper.toResponse(any(TouristPoint.class))).thenReturn(response);
+            when(touristPointRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+            when(touristPointMapper.toSummaryResponse(any(TouristPoint.class))).thenReturn(touristPointSummaryResponse);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> touristPointService.findMyTouristPoints());
+            var result = touristPointService.findMyTouristPoints(filterRequest, pageable);
 
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository).findByUserId(user.getId());
-            verify(touristPointMapper).toResponse(touristPoint);
-
-            assertEquals(response, result.get(0));
+            assertEquals(touristPointSummaryResponse, result.getContent().get(0));
         }
 
         @Test
         void should_throw_unauthorized_exception_when_user_not_authenticated() {
             //Arrange
+            Pageable pageable = PageRequest.of(0, 10);
+
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(UnauthorizedException.class, () -> touristPointService.findMyTouristPoints());
-
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository, times(0)).findByUserId(any(UUID.class));
-            verify(touristPointMapper, times(0)).toResponse(any(TouristPoint.class));
+            assertThrows(UnauthorizedException.class, () -> touristPointService.findMyTouristPoints(filterRequest, pageable));
         }
     }
 
@@ -168,64 +187,66 @@ public class TouristPointServiceTest {
         @Test
         void should_save_tourist_point_with_success() {
             //Arrange
-            TouristPointRequest request = TouristPointFactory.createRequest();
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-            TouristPointResponse response = TouristPointFactory.createResponse();
+            TouristPoint touristPointEmpty = new TouristPoint();
 
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
-            when(addressService.create(request.addressRequest())).thenReturn(touristPoint.getAddress());
-            when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
-            when(accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())).thenReturn(new ArrayList<>(touristPoint.getAccessibilityTypes()));
-            when(touristPointMapper.toEntity(request)).thenReturn(touristPoint);
-            when(touristPointRepository.save(touristPoint)).thenReturn(touristPoint);
-            when(touristPointMapper.toResponse(touristPoint)).thenReturn(response);
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(addressService.create(touristPointRequest.addressRequest())).thenReturn(address);
+            when(categoryRepository.findAllById(touristPointRequest.categoriesIds())).thenReturn(List.copyOf(categories));
+            when(accessibilityTypesRepository.findAllById(touristPointRequest.accessibilityTypesIds())).thenReturn(List.copyOf(accessibilityTypes));
+            when(touristPointMapper.toEntity(touristPointRequest)).thenReturn(touristPointEmpty);
+            when(touristPointMapper.toResponse(touristPointEmpty, 0.0)).thenReturn(touristPointResponse);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> touristPointService.save(request));
+            var result = touristPointService.save(touristPointRequest);
 
-            verify(authService).getAuthenticatedUser();
             verify(addressService).create(any(AddressRequest.class));
-            verify(categoryRepository).findAllById(any(Set.class));
-            verify(accessibilityTypesRepository).findAllById(any(Set.class));
-            verify(touristPointMapper).toEntity(any(TouristPointRequest.class));
             verify(touristPointRepository).save(captor.capture());
 
             var captured = captor.getValue();
 
-            assertInstanceOf(TouristPointResponse.class, result);
-            assertEquals(response.id(), result.id());
-            assertEquals(touristPoint.getUser(), captured.getUser());
-            assertEquals(touristPoint.getAddress(), captured.getAddress());
-            assertEquals(touristPoint.getCategories(), captured.getCategories());
-            assertEquals(touristPoint.getAccessibilityTypes(), captured.getAccessibilityTypes());
+            assertSame(touristPointResponse, result);
+            assertEquals(user, captured.getUser());
+            assertEquals(address, captured.getAddress());
+            assertEquals(categories, captured.getCategories());
+            assertEquals(accessibilityTypes, captured.getAccessibilityTypes());
         }
 
         @Test
         void should_throw_unauthorized_exception_when_user_not_authenticated() {
             //Arrange
-            TouristPointRequest request = TouristPointFactory.createRequest();
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
             //Act & Assert
-            assertThrows(UnauthorizedException.class, () -> touristPointService.save(request));
+            assertThrows(UnauthorizedException.class, () -> touristPointService.save(touristPointRequest));
 
-            verify(authService).getAuthenticatedUser();
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_no_states_exists() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+            when(addressService.create(any(AddressRequest.class))).thenThrow(new NotFoundException("state not found"));
+
+            //Act & Assert
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.update(id, touristPointRequest));
+
+            verifyNoInteractions(touristPointMapper);
+
+            assertEquals("state not found", result.getMessage());
         }
 
         @Test
         void should_throw_geocoding_exception_when_GeocodingClient_failed() {
             //Arrange
-            TouristPointRequest request = TouristPointFactory.createRequest();
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(addressService.create(request.addressRequest())).thenThrow(new GeocodingException("Failed to retrieve coordinates. Check the address and try again."));
+            when(addressService.create(touristPointRequest.addressRequest())).thenThrow(
+                    new GeocodingException("Failed to retrieve coordinates. Check the address and try again.")
+            );
 
             //Act & Assert
-            assertThrows(GeocodingException.class, () -> touristPointService.save(request));
+            assertThrows(GeocodingException.class, () -> touristPointService.save(touristPointRequest));
 
-            verify(authService).getAuthenticatedUser();
-            verify(addressService).create(any(AddressRequest.class));
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
         }
@@ -233,18 +254,13 @@ public class TouristPointServiceTest {
         @Test
         void should_throw_not_found_exception_when_no_category_exists() {
             //Arrange
-            TouristPointRequest request = TouristPointFactory.createRequest();
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(addressService.create(request.addressRequest())).thenReturn(AddressFactory.createEntity());
-            when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>());
+            when(addressService.create(touristPointRequest.addressRequest())).thenReturn(AddressFactory.createEntity());
+            when(categoryRepository.findAllById(touristPointRequest.categoriesIds())).thenReturn(new ArrayList<>());
 
             //Act & Assert
-            var result = assertThrows(NotFoundException.class, () -> touristPointService.save(request));
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.save(touristPointRequest));
 
-            verify(authService).getAuthenticatedUser();
-            verify(addressService).create(any(AddressRequest.class));
-            verify(categoryRepository).findAllById(any(Set.class));
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
             assertEquals("Category not found.", result.getMessage());
@@ -253,21 +269,14 @@ public class TouristPointServiceTest {
         @Test
         void should_throw_not_found_exception_when_no_accessibility_types_exists() {
             //Arrange
-            TouristPointRequest request = TouristPointFactory.createRequest();
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(addressService.create(request.addressRequest())).thenReturn(AddressFactory.createEntity());
-            when(categoryRepository.findAllById(request.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
-            when(accessibilityTypesRepository.findAllById(request.accessibilityTypesIds())).thenReturn(new ArrayList<>());
+            when(addressService.create(touristPointRequest.addressRequest())).thenReturn(AddressFactory.createEntity());
+            when(categoryRepository.findAllById(touristPointRequest.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
+            when(accessibilityTypesRepository.findAllById(touristPointRequest.accessibilityTypesIds())).thenReturn(new ArrayList<>());
 
             //Act & Assert
-            var result = assertThrows(NotFoundException.class, () -> touristPointService.save(request));
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.save(touristPointRequest));
 
-            verify(authService).getAuthenticatedUser();
-            verify(addressService).create(any(AddressRequest.class));
-            verify(categoryRepository).findAllById(any(Set.class));
-            verify(accessibilityTypesRepository).findAllById(any(Set.class));
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
             assertEquals("Accessibility not found.", result.getMessage());
@@ -279,25 +288,18 @@ public class TouristPointServiceTest {
         @Test
         void should_update_tourist_point_with_success() {
             //Arrange
-            TouristPointUpdateRequest request = TouristPointFactory.createUpdateRequest();
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
             when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
-            doNothing().when(touristPointMapper).updateEntity(request, touristPoint);
-            when(touristPointRepository.save(touristPoint)).thenReturn(touristPoint);
+            when(addressService.create(any(AddressRequest.class))).thenReturn(address);
+            when(categoryRepository.findAllById(touristPointRequest.categoriesIds())).thenReturn(List.copyOf(categories));
+            when(accessibilityTypesRepository.findAllById(touristPointRequest.accessibilityTypesIds())).thenReturn(List.copyOf(accessibilityTypes));
 
             //Act & Assert
-            assertDoesNotThrow(() -> touristPointService.update(request, touristPoint.getId()));
+            touristPointService.update(id, touristPointRequest);
 
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointMapper).updateEntity(any(TouristPointUpdateRequest.class), any(TouristPoint.class));
-            verify(touristPointRepository).save(captor.capture());
+            verify(touristPointMapper).updateEntity(touristPointRequest, address, categories, accessibilityTypes, touristPoint);
 
-            var captured = captor.getValue();
-
-            assertNotNull(captured);
-            assertEquals(touristPoint.getUser(), captured.getUser());
+            assertEquals(touristPoint.getUser(), user);
         }
 
         @Test
@@ -306,44 +308,92 @@ public class TouristPointServiceTest {
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(UnauthorizedException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), UUID.randomUUID()));
+            assertThrows(UnauthorizedException.class, () -> touristPointService.update(UUID.randomUUID(), TouristPointFactory.createRequest()));
 
-            verify(authService).getAuthenticatedUser();
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
         }
 
         @Test
         void should_throw_not_found_exception_when_no_tourist_point_exists() {
             //Arrange
-            UUID id = UUID.randomUUID();
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(touristPointRepository.findById(id)).thenReturn(Optional.empty());
+            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(NotFoundException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), id));
+            assertThrows(NotFoundException.class, () -> touristPointService.update(UUID.randomUUID(), TouristPointFactory.createRequest()));
 
             verify(touristPointRepository).findById(any(UUID.class));
-            verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
         }
 
         @Test
         void should_throw_forbidden_exception_when_user_not_authorized() {
             //Arrange
-            User user =  UserFactory.createEntity();
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
             when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
 
             //Act & Assert
-            assertThrows(ForbiddenException.class, () -> touristPointService.update(TouristPointFactory.createUpdateRequest(), touristPoint.getId()));
+            assertThrows(ForbiddenException.class, () -> touristPointService.update(id, touristPointRequest));
+        }
 
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository).findById(touristPoint.getId());
+        @Test
+        void should_throw_not_found_exception_when_no_states_exists() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+            when(addressService.create(any(AddressRequest.class))).thenThrow(new NotFoundException("state not found"));
+
+            //Act & Assert
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.update(id, touristPointRequest));
+
+            verifyNoInteractions(touristPointMapper);
+
+            assertEquals("state not found", result.getMessage());
+        }
+
+        @Test
+        void should_throw_geocoding_exception_when_GeocodingClient_failed() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+            when(addressService.create(any(AddressRequest.class))).thenThrow(GeocodingException.class);
+
+            //Act & Assert
+            assertThrows(GeocodingException.class, () -> touristPointService.update(id, touristPointRequest));
+
+            verifyNoInteractions(touristPointMapper);
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_no_category_exists() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
+            when(addressService.create(any(AddressRequest.class))).thenReturn(address);
+            when(categoryRepository.findAllById(touristPointRequest.categoriesIds())).thenReturn(Collections.emptyList());
+            when(accessibilityTypesRepository.findAllById(touristPointRequest.accessibilityTypesIds())).thenReturn(List.copyOf(accessibilityTypes));
+
+            //Act & Assert
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.update(id, touristPointRequest));
+
+            verifyNoInteractions(touristPointMapper);
+
+            assertEquals("Category not found.",  result.getMessage());
+        }
+
+        @Test
+        void should_throw_not_found_exception_when_no_accessibility_types_exists() {
+            //Arrange
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
+            when(addressService.create(touristPointRequest.addressRequest())).thenReturn(AddressFactory.createEntity());
+            when(categoryRepository.findAllById(touristPointRequest.categoriesIds())).thenReturn(new ArrayList<>(touristPoint.getCategories()));
+            when(accessibilityTypesRepository.findAllById(touristPointRequest.accessibilityTypesIds())).thenReturn(new ArrayList<>());
+
+            //Act & Assert
+            var result = assertThrows(NotFoundException.class, () -> touristPointService.save(touristPointRequest));
+
             verify(touristPointRepository, times(0)).save(any(TouristPoint.class));
 
-            assertNotEquals(touristPoint.getUser(), user);
+            assertEquals("Accessibility not found.", result.getMessage());
         }
     }
 
@@ -352,19 +402,13 @@ public class TouristPointServiceTest {
         @Test
         void should_delete_tourist_point_with_success() {
             //Arrange
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-            touristPoint.setPhotos(Set.of(PhotoFactory.createEntity()));
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
-            doNothing().when(photoService).delete(any(UUID.class));
             when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
 
             //Act & Assert
-            assertDoesNotThrow(() -> touristPointService.delete(touristPoint.getId()));
+            touristPointService.delete(id);
 
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository).findById(any(UUID.class));
-            verify(photoService).delete(any(UUID.class));
+            verify(photoService).deleteByTouristPoint(any(TouristPoint.class));
             verify(touristPointRepository).delete(captor.capture());
 
             var captured = captor.getValue();
@@ -381,83 +425,43 @@ public class TouristPointServiceTest {
             //Act & Assert
             assertThrows(UnauthorizedException.class, () -> touristPointService.delete(UUID.randomUUID()));
 
-            verify(authService).getAuthenticatedUser();
+            verify(photoService, times(0)).deleteByTouristPoint(any(TouristPoint.class));
             verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
         }
 
         @Test
         void should_throw_not_found_exception_when_no_tourist_point_exists() {
             //Arrange
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
             when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
             //Act & Assert
-            var result = assertThrows(NotFoundException.class, () -> touristPointService.delete(UUID.randomUUID()));
-
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository).findById(any(UUID.class));
-            verify(photoService, times(0)).delete(any(UUID.class));
-            verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
-
-            assertEquals("Tourist Point not found", result.getMessage());
+            assertThrows(NotFoundException.class, () -> touristPointService.delete(UUID.randomUUID()));
         }
 
         @Test
         void should_throw_forbidden_exception_when_user_not_authorized() {
             //Arrange
-            User user =  UserFactory.createEntity();
-            TouristPoint touristPoint =  TouristPointFactory.createEntity();
-
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
             when(touristPointRepository.findById(touristPoint.getId())).thenReturn(Optional.of(touristPoint));
 
             //Act & Assert
             assertThrows(ForbiddenException.class, () -> touristPointService.delete(touristPoint.getId()));
 
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository).findById(any(UUID.class));
+            verify(photoService, times(0)).deleteByTouristPoint(any(TouristPoint.class));
             verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
-
-            assertNotEquals(touristPoint.getUser(), user);
-        }
-
-        @Test
-        void should_throw_not_found_exception_when_not_photo_exists() {
-            //Arrange
-            TouristPoint touristPoint  =  TouristPointFactory.createEntity();
-            touristPoint.setPhotos(Set.of(PhotoFactory.createEntity()));
-
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
-            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
-            doThrow(new NotFoundException("Photo not found.")).when(photoService).delete(any(UUID.class));
-
-            //Act & Assert
-            var result = assertThrows(NotFoundException.class, () -> touristPointService.delete(UUID.randomUUID()));
-
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository).findById(any(UUID.class));
-            verify(photoService).delete(any(UUID.class));
-            verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
-
-            assertEquals("Photo not found.", result.getMessage());
         }
 
         @Test
         void should_throw_storage_exception_when_supabase_storage_fails() {
             //Arrange
-            TouristPoint touristPoint =  TouristPointFactory.createEntity();
-            touristPoint.setPhotos(Set.of(PhotoFactory.createEntity()));
-
-            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(touristPoint.getUser()));
+            when(authService.getAuthenticatedUser()).thenReturn(Optional.of(user));
             when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
-            doThrow(StorageException.class).when(photoService).delete(any(UUID.class));
+            doThrow(StorageException.class).when(photoService).deleteByTouristPoint(touristPoint);
 
             //Act & Assert
             assertThrows(StorageException.class, () -> touristPointService.delete(UUID.randomUUID()));
 
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository).findById(any(UUID.class));
-            verify(photoService).delete(any(UUID.class));
             verify(touristPointRepository, times(0)).delete(any(TouristPoint.class));
         }
     }

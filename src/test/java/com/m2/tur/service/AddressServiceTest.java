@@ -13,6 +13,7 @@ import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.State;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.repository.AddressRepository;
+import com.m2.tur.model.repository.StateRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class AddressServiceTest {
     private AddressMapper addressMapper;
 
     @Mock
-    private StateService stateService;
+    private StateRepository stateRepository;
 
     @Mock
     private TouristPointRepository touristPointRepository;
@@ -62,7 +63,7 @@ public class AddressServiceTest {
             CoordinatesResponse coordinatesResponse = new CoordinatesResponse(17.909090, 16.909009);
             State state = StateFactory.createEntity();
 
-            when(stateService.findEntityById(any(Long.class))).thenReturn(state);
+            when(stateRepository.findById(any(Long.class))).thenReturn(Optional.of(state));
             when(geocodingClient.getCoordinates(any(String.class))).thenReturn(coordinatesResponse);
             doAnswer(invocation -> {
                 Address address = invocation.getArgument(3);
@@ -75,7 +76,7 @@ public class AddressServiceTest {
             //Act & Assert
             var result = assertDoesNotThrow(() -> addressService.create(request));
 
-            verify(stateService).findEntityById(any(Long.class));
+            verify(stateRepository).findById(any(Long.class));
             verify(geocodingClient).getCoordinates(any(String.class));
             verify(addressMapper).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
 
@@ -89,12 +90,12 @@ public class AddressServiceTest {
         @Test
         void should_throw_not_found_exception_when_no_state_exists() {
             //Arrange
-            when(stateService.findEntityById(any(Long.class))).thenThrow(new NotFoundException("State not found."));
+            when(stateRepository.findById(any(Long.class))).thenThrow(new NotFoundException("State not found."));
 
             //Act & Assert
             assertThrows(NotFoundException.class, () -> addressService.create(AddressFactory.createRequest()));
 
-            verify(stateService).findEntityById(any(Long.class));
+            verify(stateRepository).findById(any(Long.class));
             verify(geocodingClient, times(0)).getCoordinates(any(String.class));
             verify(addressMapper, times(0)).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
         }
@@ -105,98 +106,12 @@ public class AddressServiceTest {
             AddressRequest request = AddressFactory.createRequest();
             State state = StateFactory.createEntity();
 
-            when(stateService.findEntityById(state.getId())).thenReturn(state);
+            when(stateRepository.findById(state.getId())).thenReturn(Optional.of(state));
             when(geocodingClient.getCoordinates(any(String.class))).thenThrow(new GeocodingException("Failed to retrieve coordinates. Check the address and try again."));
 
             //Act & Assert
             var result = assertThrows(GeocodingException.class, () -> addressService.create(request));
             assertEquals("Failed to retrieve coordinates. Check the address and try again.", result.getMessage());
-        }
-    }
-
-    @Nested
-    class Update {
-        @Test
-        void should_update_address_with_success() {
-            //Arrange
-            AddressRequest request = AddressFactory.createRequest();
-            Address address = AddressFactory.createEntity();
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-
-            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
-            when(stateService.findEntityById(any(Long.class))).thenReturn(address.getState());
-            when(geocodingClient.getCoordinates(any(String.class))).thenReturn(new CoordinatesResponse(address.getLatitude(), address.getLongitude()));
-            doAnswer(invocation -> {
-                Address test = new Address();
-                test.setNeighborhood(request.neighborhood());
-                test.setLatitude(address.getLatitude());
-                test.setLongitude(address.getLongitude());
-                return null;
-            }).when(addressMapper).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
-
-            //Act & Assert
-            assertDoesNotThrow(() -> addressService.update(touristPoint.getId(), request));
-
-            verify(touristPointRepository).findById(any(UUID.class));
-            verify(stateService).findEntityById(any(Long.class));
-            verify(geocodingClient).getCoordinates(any(String.class));
-            verify(addressMapper).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), captor.capture());
-
-            var captured = captor.getValue();
-
-            assertEquals(address.getState(), captured.getState());
-            assertEquals(address.getNeighborhood(), captured.getNeighborhood());
-            assertEquals(address.getLatitude(), captured.getLatitude());
-            assertEquals(address.getLongitude(), captured.getLongitude());
-        }
-
-        @Test
-        void should_throw_not_found_exception_when_no_tourist_point_exists() {
-            //Arrange
-            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-
-            //Act & Assert
-            var result = assertThrows(NotFoundException.class, () -> addressService.update(UUID.randomUUID(), AddressFactory.createRequest()));
-
-            verify(stateService, times(0)).findEntityById(any(Long.class));
-            verify(geocodingClient, times(0)).getCoordinates(any(String.class));
-            verify(addressMapper, times(0)).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
-
-            assertEquals("tourist point not found", result.getMessage());
-        }
-
-        @Test
-        void should_throw_not_found_exception_when_no_state_exists() {
-            //Arrange
-            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(TouristPointFactory.createEntity()));
-            when(stateService.findEntityById(any(Long.class))).thenThrow(new NotFoundException("State not found."));
-
-            //Act & Assert
-            var result = assertThrows(NotFoundException.class, () -> addressService.update(UUID.randomUUID(), AddressFactory.createRequest()));
-
-            verify(touristPointRepository).findById(any(UUID.class));
-            verify(stateService).findEntityById(any(Long.class));
-            verify(addressMapper, times(0)).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
-
-            assertEquals("State not found.", result.getMessage());
-        }
-
-        @Test
-        void should_throw_geocoding_exception_when_geocoding_client_fails() {
-            //Arrange
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-            Address address = AddressFactory.createEntity();
-
-            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
-            when(stateService.findEntityById(any(Long.class))).thenReturn(address.getState());
-            when(geocodingClient.getCoordinates(any(String.class))).thenThrow(new GeocodingException("Failed to retrieve coordinates."));
-
-            //Act & Assert
-            assertThrows(GeocodingException.class, () -> addressService.update(touristPoint.getId(), AddressFactory.createRequest()));
-
-            verify(touristPointRepository).findById(any(UUID.class));
-            verify(stateService).findEntityById(any(Long.class));
-            verify(addressMapper, times(0)).toEntity(any(AddressRequest.class), any(Double.class), any(Double.class), any(Address.class));
         }
     }
 }

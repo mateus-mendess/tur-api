@@ -6,7 +6,9 @@ import com.m2.tur.factory.UserFactory;
 import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.infra.exception.UnauthorizedException;
 import com.m2.tur.mapper.TouristPointMapper;
+import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.response.TouristPointResponse;
+import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.Favorite;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
@@ -20,6 +22,11 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,33 +60,39 @@ public class FavoriteServiceTest {
         @Test
         void should_return_tourist_points_favorites_with_success() {
             //Arrange
-            TouristPointResponse response = TouristPointFactory.createResponse();
+            TouristPointFilterRequest filter = TouristPointFactory.createFilterRequest();
+            TouristPointSummaryResponse response = TouristPointFactory.createSummaryResponse();
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<TouristPoint> page = new PageImpl<>(List.of(TouristPointFactory.createEntity()), pageable, 10);
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(favoriteRepository.findByUserId(any(UUID.class))).thenReturn(List.of(FavoriteFactory.createEntity()));
-            when(touristPointMapper.toResponse(any(TouristPoint.class))).thenReturn(response);
+            when(favoriteRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+            when(touristPointMapper.toSummaryResponse(any(TouristPoint.class))).thenReturn(response);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> favoriteService.findMyFavorites());
+            var result = assertDoesNotThrow(() -> favoriteService.findMyFavorites(filter, pageable));
 
             verify(authService).getAuthenticatedUser();
-            verify(favoriteRepository).findByUserId(any(UUID.class));
-            verify(touristPointMapper).toResponse(any(TouristPoint.class));
+            verify(favoriteRepository).findAll(any(Specification.class), any(Pageable.class));
+            verify(touristPointMapper).toSummaryResponse(any(TouristPoint.class));
 
-            assertEquals(response.userId(), result.get(0).userId());
+            assertInstanceOf(TouristPointSummaryResponse.class, result.getContent().get(0));
         }
 
         @Test
         void should_throw_unauthorized_exception_when_user_not_authenticated() {
             //Arrange
+            TouristPointFilterRequest filter = TouristPointFactory.createFilterRequest();
+            Pageable pageable = PageRequest.of(0, 10);
+
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(UnauthorizedException.class, ()-> favoriteService.findMyFavorites());
+            assertThrows(UnauthorizedException.class, ()-> favoriteService.findMyFavorites(filter, pageable));
 
             verify(authService).getAuthenticatedUser();
-            verify(favoriteRepository, times(0)).findByUserId(any(UUID.class));
-            verify(touristPointMapper, times(0)).toResponse(any(TouristPoint.class));
+            verify(favoriteRepository, times(0)).findAll(any(Specification.class), any(Pageable.class));
+            verify(touristPointMapper, times(0)).toSummaryResponse(any(TouristPoint.class));
         }
     }
 

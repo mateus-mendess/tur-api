@@ -92,9 +92,7 @@ public class TouristPointService {
 
         touristPointRepository.save(touristPoint);
 
-        Double averageRating = commentRepository.findAverageRatingByTouristPointId(touristPoint.getId());
-
-        return touristPointMapper.toResponse(touristPoint, averageRating);
+        return touristPointMapper.toResponse(touristPoint, 0.0);
     }
 
     @Transactional
