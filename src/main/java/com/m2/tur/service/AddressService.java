@@ -26,12 +26,6 @@ public class AddressService {
     public Address create(AddressRequest request) {
         Address address = new Address();
 
-        fillAddress(request, address);
-
-        return address;
-    }
-
-    private void fillAddress(AddressRequest request, Address address) {
         State state = stateRepository.findById(request.stateId())
                 .orElseThrow(() -> new NotFoundException("state not found"));
 
@@ -47,6 +41,6 @@ public class AddressService {
 
         CoordinatesResponse response = geocodingClient.getCoordinates(fullAddress);
 
-        addressMapper.toEntity(request, response.latitude(), response.longitude(), address);
+        return addressMapper.toEntity(request, response.latitude(), response.longitude(), address);
     }
 }

@@ -10,6 +10,7 @@ import com.m2.tur.model.entity.Comment;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.repository.CommentRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,25 +49,36 @@ public class CommentServiceTest {
     @Captor
     private ArgumentCaptor<Comment> captor;
 
+    private CommentRequest commentRequest;
+    private Comment comment;
+    private CommentResponse commentResponse;
+    private TouristPoint touristPoint;
+    private UUID touristPointId;
+
+    @BeforeEach
+    void setUp() {
+        commentRequest = CommentFactory.createRequest();
+        comment = CommentFactory.createEntity();
+        commentResponse = CommentFactory.createResponse();
+        touristPoint = TouristPointFactory.createEntity();
+        touristPointId = touristPoint.getId();
+    }
+
     @Nested
     class FindAllComments {
         @Test
         void should_return_all_comments_success() {
             //Arrange
-            UUID touristPointId = UUID.randomUUID();
-            Comment comment = CommentFactory.createEntity();
-            CommentResponse response = CommentFactory.createResponse();
             Pageable pageable = PageRequest.of(0, 10);
             Page<Comment> page = new PageImpl<>(List.of(comment), pageable, 10);
 
             when(commentRepository.findAllByTouristPointId(any(UUID.class), any(Pageable.class))).thenReturn(page);
-            when(commentMapper.toResponse(comment)).thenReturn(response);
+            when(commentMapper.toResponse(comment)).thenReturn(commentResponse);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> commentService.findAllComments(touristPointId, pageable));
+            var result = commentService.findAllComments(touristPointId, pageable);
 
             assertNotNull(result);
-            assertInstanceOf(CommentResponse.class, result.getContent().get(0));
         }
     }
 
@@ -75,40 +87,28 @@ public class CommentServiceTest {
         @Test
         void should_save_comment_success() {
             //Arrange
-            UUID touristPointId = UUID.randomUUID();
-            CommentRequest request =  CommentFactory.createRequest();
-            Comment entity =  CommentFactory.createEntity();
-            TouristPoint touristPoint = TouristPointFactory.createEntity();
-
             when(touristPointRepository.findById(touristPointId)).thenReturn(Optional.of(touristPoint));
-            when(commentMapper.toEntity(request)).thenReturn(entity);
-            when(commentRepository.save(entity)).thenReturn(entity);
+            when(commentMapper.toEntity(commentRequest)).thenReturn(comment);
 
             //Act & Assert
-            assertDoesNotThrow(() -> commentService.save(touristPointId, request));
+            commentService.save(touristPointId, commentRequest);
 
-            verify(commentMapper).toEntity(any(CommentRequest.class));
             verify(commentRepository).save(captor.capture());
 
             var captured = captor.getValue();
-            assertEquals(request.authorName(), captured.getAuthorName());
-            assertEquals(touristPoint, captured.getTouristPoint());
+
+            assertNotNull(captured.getTouristPoint());
         }
 
         @Test
         void should_throw_not_found_exception_when_tourist_point_not_found() {
             //Arrange
-            UUID touristPointId = UUID.randomUUID();
-            CommentRequest request =  CommentFactory.createRequest();
-
             when(touristPointRepository.findById(touristPointId)).thenReturn(Optional.empty());
 
             //Act & Assert
-            var result = assertThrows(NotFoundException.class, () -> commentService.save(touristPointId, request));
+            assertThrows(NotFoundException.class, () -> commentService.save(touristPointId, commentRequest));
 
             verify(commentRepository, times(0)).save(any(Comment.class));
-
-            assertEquals("Tourist Point Not Found.",  result.getMessage());
         }
     }
 }

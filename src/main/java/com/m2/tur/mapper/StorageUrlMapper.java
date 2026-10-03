@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
 
-@Component
 @RequiredArgsConstructor
+@Component
 public class StorageUrlMapper {
 
     private final SupabaseConfig supabaseConfig;

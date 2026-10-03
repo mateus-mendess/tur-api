@@ -15,8 +15,6 @@ import java.util.*;
 public class AccessibilityTypesService {
     private final AccessibilityTypesRepository accessibilityTypesRepository;
     private final AccessibilityTypesMapper accessibilityTypesMapper;
-    private final TouristPointRepository  touristPointRepository;
-    private final AuthService authService;
 
     @Cacheable(cacheNames = "accessibility-types")
     public List<AccessibilityTypesResponse> findAllAccessibilityTypes() {

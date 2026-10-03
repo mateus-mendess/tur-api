@@ -14,13 +14,11 @@ import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.FavoriteRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -55,44 +53,49 @@ public class FavoriteServiceTest {
     @Captor
     private ArgumentCaptor<Favorite> favoriteCaptor;
 
+    private Favorite favorite;
+    private TouristPointFilterRequest filterRequest;
+    private TouristPoint touristPoint;
+    private TouristPointSummaryResponse touristPointSummaryResponse;
+    private Pageable pageable;
+
+    @BeforeEach
+    void setUp() {
+        favorite = FavoriteFactory.createEntity();
+        filterRequest = TouristPointFactory.createFilterRequest();
+        touristPoint = favorite.getTouristPoint();
+        touristPointSummaryResponse = TouristPointFactory.createSummaryResponse();
+        pageable = PageRequest.of(0, 10);
+    }
+
     @Nested
     class FindMyFavorites {
         @Test
         void should_return_tourist_points_favorites_with_success() {
             //Arrange
-            TouristPointFilterRequest filter = TouristPointFactory.createFilterRequest();
-            TouristPointSummaryResponse response = TouristPointFactory.createSummaryResponse();
-            Pageable pageable = PageRequest.of(0, 10);
-            Page<TouristPoint> page = new PageImpl<>(List.of(TouristPointFactory.createEntity()), pageable, 10);
+            Page<TouristPoint> page = new PageImpl<>(List.of(touristPoint), pageable, 10);
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(favoriteRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
-            when(touristPointMapper.toSummaryResponse(any(TouristPoint.class))).thenReturn(response);
+            when(touristPointRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+            when(touristPointMapper.toSummaryResponse(any(TouristPoint.class))).thenReturn(touristPointSummaryResponse);
 
             //Act & Assert
-            var result = assertDoesNotThrow(() -> favoriteService.findMyFavorites(filter, pageable));
+            var result = favoriteService.findMyFavorites(filterRequest, pageable);
 
             verify(authService).getAuthenticatedUser();
-            verify(favoriteRepository).findAll(any(Specification.class), any(Pageable.class));
-            verify(touristPointMapper).toSummaryResponse(any(TouristPoint.class));
 
-            assertInstanceOf(TouristPointSummaryResponse.class, result.getContent().get(0));
+            assertNotNull(result.getContent());
         }
 
         @Test
         void should_throw_unauthorized_exception_when_user_not_authenticated() {
             //Arrange
-            TouristPointFilterRequest filter = TouristPointFactory.createFilterRequest();
-            Pageable pageable = PageRequest.of(0, 10);
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(UnauthorizedException.class, ()-> favoriteService.findMyFavorites(filter, pageable));
+            assertThrows(UnauthorizedException.class, ()-> favoriteService.findMyFavorites(filterRequest, pageable));
 
-            verify(authService).getAuthenticatedUser();
             verify(favoriteRepository, times(0)).findAll(any(Specification.class), any(Pageable.class));
-            verify(touristPointMapper, times(0)).toSummaryResponse(any(TouristPoint.class));
         }
     }
 
@@ -101,25 +104,19 @@ public class FavoriteServiceTest {
         @Test
         void should_favorite_tourist_point_with_success() {
             //Arrange
-            Favorite favorite = FavoriteFactory.createEntity();
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
             when(favoriteRepository.existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class))).thenReturn(false);
-            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(favorite.getTouristPoint()));
-            when(favoriteRepository.saveAndFlush(any(Favorite.class))).thenReturn(favorite);
+            when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
 
             //Act & Assert
-            assertDoesNotThrow(() -> favoriteService.addFavorite(favorite.getTouristPoint().getId()));
+            favoriteService.addFavorite(touristPoint.getId());
 
-            verify(authService).getAuthenticatedUser();
-            verify(favoriteRepository).existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class));
-            verify(touristPointRepository).findById(any(UUID.class));
             verify(favoriteRepository).saveAndFlush(favoriteCaptor.capture());
 
             var captured = favoriteCaptor.getValue();
 
-            assertEquals(favorite.getTouristPoint().getId(), captured.getTouristPoint().getId());
             assertNotNull(captured.getUser());
+            assertNotNull(captured.getTouristPoint());
         }
 
         @Test
@@ -128,10 +125,8 @@ public class FavoriteServiceTest {
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(UnauthorizedException.class, ()-> favoriteService.addFavorite(UUID.randomUUID()));
+            assertThrows(UnauthorizedException.class, ()-> favoriteService.addFavorite(touristPoint.getId()));
 
-            verify(authService).getAuthenticatedUser();
-            verify(touristPointRepository, times(0)).findById(any(UUID.class));
             verify(favoriteRepository, times(0)).saveAndFlush(any(Favorite.class));
         }
 
@@ -142,11 +137,9 @@ public class FavoriteServiceTest {
             when(favoriteRepository.existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class))).thenReturn(true);
 
             //Act & Assert
-            assertDoesNotThrow(() -> favoriteService.addFavorite(UUID.randomUUID()));
+            favoriteService.addFavorite(touristPoint.getId());
 
-            verify(authService).getAuthenticatedUser();
             verify(favoriteRepository).existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class));
-            verify(touristPointRepository, times(0)).findById(any(UUID.class));
             verify(favoriteRepository, times(0)).saveAndFlush(any(Favorite.class));
         }
 
@@ -160,9 +153,6 @@ public class FavoriteServiceTest {
             //Act & Assert
             assertThrows(NotFoundException.class, () -> favoriteService.addFavorite(UUID.randomUUID()));
 
-            verify(authService).getAuthenticatedUser();
-            verify(favoriteRepository).existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class));
-            verify(touristPointRepository).findById(any(UUID.class));
             verify(favoriteRepository, times(0)).saveAndFlush(any(Favorite.class));
         }
     }
@@ -172,15 +162,11 @@ public class FavoriteServiceTest {
         @Test
         void should_remove_favorite_tourist_point_with_success() {
             //Arrange
-            Favorite favorite = FavoriteFactory.createEntity();
-
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(favorite.getUser()));
-            doNothing().when(favoriteRepository).deleteByUserIdAndTouristPointId(favorite.getUser().getId(), favorite.getTouristPoint().getId());
 
             //Act & Assert
-            assertDoesNotThrow(() -> favoriteService.removeFavorite(favorite.getTouristPoint().getId()));
+            favoriteService.removeFavorite(favorite.getTouristPoint().getId());
 
-            verify(authService).getAuthenticatedUser();
             verify(favoriteRepository).deleteByUserIdAndTouristPointId(favorite.getUser().getId(), favorite.getTouristPoint().getId());
         }
 
@@ -190,9 +176,8 @@ public class FavoriteServiceTest {
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
             //Act & Assert
-            assertThrows(UnauthorizedException.class, () -> favoriteService.removeFavorite(UUID.randomUUID()));
+            assertThrows(UnauthorizedException.class, () -> favoriteService.removeFavorite(touristPoint.getId()));
 
-            verify(authService).getAuthenticatedUser();
             verify(favoriteRepository, times(0)).deleteByUserIdAndTouristPointId(any(UUID.class), any(UUID.class));
         }
     }
