@@ -47,11 +47,6 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
-    @ExceptionHandler(OtpCodeExpiredException.class)
-    public ProblemDetail handleOtpCodeExpiredException(OtpCodeExpiredException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.GONE, e.getMessage());
-    }
-
     @ExceptionHandler(InvalidOtpCodeException.class)
     public ProblemDetail handleInvalidOtpCodeException(InvalidOtpCodeException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
