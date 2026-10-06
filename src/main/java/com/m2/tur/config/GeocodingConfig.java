@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "geocoding")
 public class GeocodingConfig {
-    private String geocodingUrl;
+    private String url;
 
     private String userAgent;
 }

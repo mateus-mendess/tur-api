@@ -31,7 +31,7 @@ public class GeocodingClient {
         factory.setReadTimeout(Duration.ofSeconds(5));
 
         this.restClient = RestClient.builder()
-                .baseUrl(config.getGeocodingUrl())
+                .baseUrl(config.getUrl())
                 .defaultHeader("User-Agent", config.getUserAgent())
                 .requestFactory(factory)
                 .build();
