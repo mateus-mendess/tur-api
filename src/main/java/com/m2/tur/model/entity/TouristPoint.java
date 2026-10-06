@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -58,9 +60,8 @@ public class TouristPoint {
     @OneToMany(mappedBy = "touristPoint")
     private Set<Photo> photos;
 
-    @OneToMany(mappedBy = "touristPoint", cascade = {CascadeType.REMOVE, CascadeType.REFRESH},
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "touristPoint", fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Comment> comments;
 
     @PrePersist

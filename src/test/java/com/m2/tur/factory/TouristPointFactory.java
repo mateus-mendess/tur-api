@@ -2,8 +2,10 @@ package com.m2.tur.factory;
 
 import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.request.TouristPointRequest;
+import com.m2.tur.model.dto.response.CommentResponse;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
+import com.m2.tur.model.entity.Comment;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
 
@@ -52,8 +54,8 @@ public class TouristPointFactory {
     public static TouristPointFilterRequest createFilterRequest() {
         return new TouristPointFilterRequest(
                 "Maceió",
-                UUID.randomUUID(),
-                UUID.randomUUID(),
+                1L,
+                1L,
                 UUID.randomUUID()
         );
     }
@@ -89,6 +91,7 @@ public class TouristPointFactory {
 
     public static TouristPointResponse createResponse() {
         User user = UserFactory.createEntity();
+        CommentResponse comment = CommentFactory.createResponse();
         return new TouristPointResponse(
                 UUID.randomUUID(),
                 DEFAULT_NAME,
@@ -99,6 +102,7 @@ public class TouristPointFactory {
                 Set.of(PhotoFactory.createResponse()),
                 5.00,
                 user.getName(),
+                Set.of(comment),
                 user.getId()
         );
     }
