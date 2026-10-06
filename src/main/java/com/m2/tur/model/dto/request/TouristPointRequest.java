@@ -11,10 +11,11 @@ import java.util.Set;
 import java.util.UUID;
 
 public record TouristPointRequest(
-        @NotBlank
         @Size(min = 5, max = 100)
+        @NotBlank
         String name,
 
+        @Size(max = 300)
         @NotBlank
         String description,
 

@@ -1,29 +1,30 @@
 package com.m2.tur.model.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 import java.util.Objects;
 
 public record UserRequest(
+        @Size(min = 2, max = 60)
         @NotBlank(message = "=Name required")
-        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]{2,100}$",
+        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]$",
         message = "Name invalid.")
         String name,
 
+        @Size(max = 150)
         @NotBlank(message = "Email required")
         @Email(message = "Email invalid.")
         String email,
 
         @Schema(description = "Password must contain at least 8 characters, including uppercase, lowercase, numbers and special characters", example = "Secret@123")
+        @Size(min = 8, max = 20)
         @NotBlank(message = "Password required")
-        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$",
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d])$",
         message = "The password must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters")
         String password,
 
+        @Size(min = 8, max = 20)
         @NotBlank(message = "Password confirmation required")
         String confirmPassword
 ) {

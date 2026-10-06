@@ -1,11 +1,9 @@
 package com.m2.tur.factory;
 
-import com.m2.tur.model.dto.request.AccessibilityUpdateRequest;
 import com.m2.tur.model.dto.response.AccessibilityTypesResponse;
 import com.m2.tur.model.entity.AccessibilityTypes;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 public class AccessibilityTypeFactory {

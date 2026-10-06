@@ -7,9 +7,9 @@ import jakarta.validation.constraints.Size;
 
 public record CategoryRequest(
         @Schema(description = "Category name. Only letters and spaces allowed.", example = "Beaches")
+        @Size(min = 5, max = 30)
         @NotBlank(message = "name required")
-        @Size(min = 1, max = 30)
-        @Pattern(regexp = "[A-Za-zÀ-ÖØ-öø-ÿ ]{2,100}$",
+        @Pattern(regexp = "[A-Za-zÀ-ÖØ-öø-ÿ ]$",
         message = "Invalid name")
         String name
 ) {}
