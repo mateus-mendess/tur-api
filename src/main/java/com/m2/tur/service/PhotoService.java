@@ -11,6 +11,7 @@ import com.m2.tur.model.repository.TouristPointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,7 +33,10 @@ public class PhotoService {
     private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp");
 
     @Transactional
-    @CacheEvict(cacheNames = "tourist-point", key = "#touristPointId")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "tourist-point", key = "#touristPointId")
+    })
     public void save(UUID touristPointId, MultipartFile file) {
         User user  = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User unauthorized."));
@@ -60,6 +64,10 @@ public class PhotoService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "tourist-point", key = "#touristPointId")
+    })
     public void delete(UUID id) {
         User user  = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User unauthorized."));
