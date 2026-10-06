@@ -46,13 +46,13 @@ public class PasswordController {
             to prevent user enumeration.
             """)
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Request processed; a code was sent if the email is registered"),
+            @ApiResponse(responseCode = "204", description = "Request processed; a code was sent if the email is registered"),
     })
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
         passwordService.requestPasswordReset(request.email());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Verify password reset code", description = """

@@ -9,6 +9,7 @@ import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.PhotoRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.tika.Tika;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -101,13 +103,19 @@ public class PhotoService {
         if (file == null || file.isEmpty()) {
             throw new InvalidFileException("File cannot be empty");
         }
+        try {
+            Tika tika = new Tika();
+            String trueMimeType = tika.detect(file.getInputStream());
+
+            if (!ALLOWED_TYPES.contains(trueMimeType)) {
+                throw new InvalidFileException("Invalid file type");
+            }
+        } catch (IOException e) {
+            throw new InvalidFileException("Failed to read file content for validation");
+        }
 
         if (file.getSize() > MAX_FILE_SIZE) {
             throw new InvalidFileException("File is too large");
-        }
-
-        if (!ALLOWED_TYPES.contains(file.getContentType())) {
-            throw new InvalidFileException("Invalid file type");
         }
 
         if (photoRepository.countByTouristPointId(touristPointId) >= 4) {

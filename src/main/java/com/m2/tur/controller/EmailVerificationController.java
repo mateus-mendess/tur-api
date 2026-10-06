@@ -1,8 +1,10 @@
 package com.m2.tur.controller;
 
 
+import com.m2.tur.model.dto.request.ResendVerificationRequest;
 import com.m2.tur.model.dto.request.VerifyCodeRequest;
 import com.m2.tur.service.EmailVerificationService;
+import com.m2.tur.service.OtpCodeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Tag(name = "Email Verification", description = "Endpoint for verifying a user's registered email")
 @RequiredArgsConstructor
@@ -32,6 +36,13 @@ public class EmailVerificationController {
     @PatchMapping("/verify")
     public ResponseEntity<Void> verifyEmail(@RequestBody @Valid VerifyCodeRequest request) {
         emailVerificationService.verifyEmail(request);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<Void> resendVerificationCode(@RequestBody @Valid ResendVerificationRequest request) {
+        emailVerificationService.resendVerificationCode(request.email());
 
         return ResponseEntity.noContent().build();
     }

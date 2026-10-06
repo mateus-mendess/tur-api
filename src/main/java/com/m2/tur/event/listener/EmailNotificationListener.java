@@ -2,21 +2,20 @@ package com.m2.tur.event.listener;
 
 import com.m2.tur.event.UserRegisteredEvent;
 import com.m2.tur.service.EmailService;
+import com.m2.tur.service.EmailVerificationService;
 import com.m2.tur.service.OtpCodeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @RequiredArgsConstructor
 @Component
 public class EmailNotificationListener {
-    private final EmailService emailService;
-    private final OtpCodeService otpService;
+    private final EmailVerificationService emailVerificationService;
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleUserRegistered(UserRegisteredEvent event) {
-        String otpCode = otpService.generateUserRegistrationCode(event.userId());
-
-        emailService.sendVerificationEmail(event.email(), otpCode);
+        emailVerificationService.sendVerificationCode(event.userId(), event.email());
     }
 }

@@ -1,23 +1,25 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.EmailException;
-import jakarta.mail.MessageRemovedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class EmailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
+    @Async
     public void sendVerificationEmail(String email, String code){
         Context context = new Context();
         context.setVariable("code", code);
@@ -27,6 +29,7 @@ public class EmailService {
         send(email, "Confirm your registration - tur.", htmlBody);
     }
 
+    @Async
     public void sendResetPasswordEmail(String email, String code){
         Context context = new Context();
         context.setVariable("code", code);
@@ -47,8 +50,8 @@ public class EmailService {
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new EmailException("Failed to send verification email: " + e.getMessage());
+        } catch (MessagingException | MailException e) {
+            log.error("Failed to send email", e);
         }
     }
 }
