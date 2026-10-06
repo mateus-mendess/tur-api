@@ -47,22 +47,11 @@ public class FavoriteService {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User is not logged in"));
 
-        if (favoriteRepository.existsByUserIdAndTouristPointId(user.getId(), touristPointId)) {
-            return;
+        if (!touristPointRepository.existsById(touristPointId)) {
+            throw new NotFoundException("Tourist Point Not Found");
         }
 
-        TouristPoint touristPoint = touristPointRepository.findById(touristPointId)
-                        .orElseThrow(() -> new NotFoundException("TouristPoint not found"));
-
-        Favorite favorite = new Favorite();
-        favorite.setUser(user);
-        favorite.setTouristPoint(touristPoint);
-
-        try {
-            favoriteRepository.saveAndFlush(favorite);
-        } catch (DataIntegrityViolationException e) {
-            //race condition: another request has already inserted the same pair between the exists() call and now — no-op.
-        }
+        favoriteRepository.insertIgnore(user.getId(), touristPointId);
     }
 
     @Transactional

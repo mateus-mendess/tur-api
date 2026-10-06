@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,7 +14,13 @@ import java.util.UUID;
 
 @Repository
 public interface FavoriteRepository extends JpaRepository<Favorite, UUID>, JpaSpecificationExecutor<Favorite> {
-    boolean existsByUserIdAndTouristPointId(UUID userId, UUID touristPointId);
+    @Modifying
+    @Query(value = """ 
+            INSERT INTO favorites (id, user_id, tourist_point_id)
+            VALUES (gen_random_uuid(), :userId, :touristPointId)
+            ON CONFLICT (user_id, tourist_point_id) DO NOTHING""",
+            nativeQuery = true)
+    void insertIgnore(UUID userId, UUID touristPointId);
 
     void deleteByUserIdAndTouristPointId(UUID userId, UUID touristPointId);
 }
