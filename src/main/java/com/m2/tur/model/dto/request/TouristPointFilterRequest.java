@@ -5,9 +5,9 @@ import java.util.UUID;
 public record TouristPointFilterRequest(
         String city,
 
-        UUID stateId,
+        Long stateId,
 
-        UUID categoryId,
+        Long categoryId,
 
         UUID accessibilityId
 ) {}
