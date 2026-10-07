@@ -11,13 +11,13 @@ public record ChangePasswordRequest(
         @NotBlank(message = "Current password required.")
         String currentPassword,
 
-        @Size(min = 8, max = 20)
+        @Size(min = 8, max = 72)
         @NotBlank(message = "New password required")
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d])$",
                 message = "The password must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.")
         String newPassword,
 
-        @Size(min = 8, max = 20)
+        @Size(min = 8, max = 72)
         @NotBlank(message = "Confirm new password required")
         String confirmNewPassword
 ) {

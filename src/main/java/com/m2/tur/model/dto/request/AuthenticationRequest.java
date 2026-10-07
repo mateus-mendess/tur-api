@@ -10,4 +10,8 @@ public record AuthenticationRequest(
 
         @NotBlank(message = "password required.")
         String password
-) {}
+) {
+        public AuthenticationRequest {
+                email = email.trim().toLowerCase();
+        }
+}
