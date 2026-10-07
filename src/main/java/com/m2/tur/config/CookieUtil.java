@@ -23,7 +23,7 @@ public class CookieUtil {
                 .secure(true)
                 .httpOnly(true)
                 .sameSite("Strict")
-                .maxAge(Duration.ofDays(1))
+                .maxAge(Duration.ofHours(3))
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

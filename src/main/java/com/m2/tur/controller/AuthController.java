@@ -56,7 +56,7 @@ public class AuthController {
 
     @Operation(summary = "Get current authenticated user", description = """
         Returns the id of the currently authenticated user, resolved
-        from the JWT (cookie or header). Used by the frontend to check
+        from the JWT. Used by the frontend to check
         whether a valid session exists without needing to inspect the
         token directly.
         """)
