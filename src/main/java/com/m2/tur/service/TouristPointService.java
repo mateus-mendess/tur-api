@@ -85,7 +85,10 @@ public class TouristPointService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "stats-cache")
+    })
     public TouristPointResponse save(TouristPointRequest request) {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
@@ -140,6 +143,7 @@ public class TouristPointService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "stats-cache"),
             @CacheEvict(cacheNames = "tourist-point", key = "#id")
     })
     public void delete(UUID id) {

@@ -8,6 +8,7 @@ import com.m2.tur.model.dto.response.UserResponse;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
+
     @Transactional
     public UserResponse save(UserRequest request) {
         validate(request);

@@ -37,6 +37,7 @@ public class PhotoService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "stats-cache", allEntries = true),
             @CacheEvict(cacheNames = "tourist-point", key = "#touristPointId")
     })
     public void save(UUID touristPointId, MultipartFile file) {
@@ -68,6 +69,7 @@ public class PhotoService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
+            @CacheEvict(cacheNames = "stats-cache"),
             @CacheEvict(cacheNames = "tourist-point", key = "#touristPointId")
     })
     public void delete(UUID id) {
