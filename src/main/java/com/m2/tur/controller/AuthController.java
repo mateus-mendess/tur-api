@@ -46,7 +46,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Successfully logged out and JWT cookie cleared"),
             @ApiResponse(responseCode = "401", description = "Unauthorized - No active session or invalid token provided")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         authService.logout(response);
@@ -64,7 +63,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Authenticated user id returned successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized - No active session or invalid token provided")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/me")
     public ResponseEntity<UUID> me() {
         return ResponseEntity.ok().body(authService.getMe());

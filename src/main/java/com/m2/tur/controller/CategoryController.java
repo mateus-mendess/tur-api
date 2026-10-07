@@ -44,7 +44,6 @@ public class CategoryController {
             @ApiResponse(responseCode = "400", description = "Invalid request data or category already exists."),
             @ApiResponse(responseCode = "404", description = "Authenticated user not found.")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody @Valid CategoryRequest request) {
         categoryService.save(request);

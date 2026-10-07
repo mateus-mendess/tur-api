@@ -35,7 +35,6 @@ public class MeController {
             @ApiResponse(responseCode = "200", description = "Tourist points retrieved successfully. Returns an empty list if the user has not registered any."),
             @ApiResponse(responseCode = "401", description = "User not authenticated")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/tourist-points")
     public ResponseEntity<List<TouristPointSummaryResponse>> listMyTouristPoints(TouristPointFilterRequest request,
                                                                                  @ParameterObject

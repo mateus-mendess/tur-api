@@ -71,7 +71,6 @@ public class TouristPointController {
             @ApiResponse(responseCode = "404", description = "State not found"),
             @ApiResponse(responseCode = "503", description = "Failed to retrieve coordinates from geocoding service."),
     })
-    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<TouristPointResponse> create(@RequestBody @Valid TouristPointRequest request) {
         TouristPointResponse response = touristPointService.save(request);
@@ -95,7 +94,6 @@ public class TouristPointController {
             @ApiResponse(responseCode = "403", description = "User not allowed to update this tourist point."),
             @ApiResponse(responseCode = "404", description = "Tourist point not found."),
     })
-    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody @Valid TouristPointRequest request) {
         touristPointService.update(id, request);
@@ -113,7 +111,6 @@ public class TouristPointController {
             @ApiResponse(responseCode = "403", description = "User not allowed to remove this tourist point."),
             @ApiResponse(responseCode = "404", description = "Tourist point not found.")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         touristPointService.delete(id);

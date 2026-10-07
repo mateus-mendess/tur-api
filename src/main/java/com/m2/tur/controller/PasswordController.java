@@ -31,7 +31,6 @@ public class PasswordController {
             @ApiResponse(responseCode = "401", description = "Current password does not match or Unauthenticated user"),
             @ApiResponse(responseCode = "400", description = "Validation error in the request body")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/change-password")
     public ResponseEntity<Void> changePassword(@RequestBody @Valid ChangePasswordRequest request) {
         passwordService.changePassword(request);

@@ -37,7 +37,6 @@ public class PhotoController {
             @ApiResponse(responseCode = "404", description = "Tourist point not found."),
             @ApiResponse(responseCode = "500", description = "Failed to upload file to storage.")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/tourist-points/{id}")
     public ResponseEntity<Void> upload(
             @Parameter(description = "ID of the tourist point to upload the photo to.", required = true)
@@ -60,7 +59,6 @@ public class PhotoController {
             @ApiResponse(responseCode = "404", description = "Tourist point or photo not found."),
             @ApiResponse(responseCode = "500", description = "Failed to delete file from storage.")
     })
-    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @Parameter(description = "ID of the photo to be removed.", required = true)
