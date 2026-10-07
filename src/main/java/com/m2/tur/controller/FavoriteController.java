@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +36,10 @@ public class FavoriteController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
-    public ResponseEntity<List<TouristPointSummaryResponse>> listMyFavorites(TouristPointFilterRequest request, @ParameterObject Pageable pageable) {
+    public ResponseEntity<List<TouristPointSummaryResponse>> listMyFavorites(TouristPointFilterRequest request,
+                                                                             @ParameterObject
+                                                                             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                             Pageable pageable) {
         return ResponseEntity.ok(favoriteService.findMyFavorites(request, pageable).getContent());
     }
     @Operation(summary = "Add a tourist point to the authenticated user's favorites", description = """

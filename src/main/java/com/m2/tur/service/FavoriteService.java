@@ -11,6 +11,7 @@ import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.FavoriteRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import com.m2.tur.model.repository.TouristPointSpecification;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,6 +31,12 @@ public class FavoriteService {
     private final AuthService authService;
 
     public Page<TouristPointSummaryResponse> findMyFavorites(TouristPointFilterRequest request, Pageable pageable) {
+        for (Sort.Order order : pageable.getSort()) {
+            if (!order.getProperty().equals("createdAt")) {
+                throw new IllegalArgumentException("Dynamic sorting blocked.");
+            }
+        }
+
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User is not logged in"));
 
@@ -42,6 +49,7 @@ public class FavoriteService {
         return touristPointRepository.findAll(spec, pageable)
                 .map(touristPointMapper::toSummaryResponse);
     }
+
     @Transactional
     public void addFavorite(UUID touristPointId) {
         User user = authService.getAuthenticatedUser()

@@ -10,6 +10,7 @@ import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.*;
 import com.m2.tur.model.repository.*;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -38,6 +39,12 @@ public class TouristPointService {
 
     @Cacheable(cacheNames = "tourist-point-summary", key = "#request + '-' + #pageable")
     public Page<TouristPointSummaryResponse> findAll(TouristPointFilterRequest request, Pageable pageable) {
+        for (Sort.Order order : pageable.getSort()) {
+            if (!order.getProperty().equals("createdAt")) {
+                throw new IllegalArgumentException("Dynamic sorting blocked.");
+            }
+        }
+
         Specification<TouristPoint> spec = TouristPointSpecification.byCity(request.city())
                 .and(TouristPointSpecification.byState(request.stateId()))
                 .and(TouristPointSpecification.byCategory(request.categoryId()))
@@ -58,6 +65,12 @@ public class TouristPointService {
     }
 
     public Page<TouristPointSummaryResponse> findMyTouristPoints(TouristPointFilterRequest request, Pageable pageable) {
+        for (Sort.Order order : pageable.getSort()) {
+            if (!order.getProperty().equals("createdAt")) {
+                throw new IllegalArgumentException("Dynamic sorting blocked.");
+            }
+        }
+
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
 

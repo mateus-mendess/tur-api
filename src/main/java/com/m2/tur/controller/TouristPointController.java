@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -36,7 +38,10 @@ public class TouristPointController {
             @ApiResponse(responseCode = "200", description = "Tourist points retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<TouristPointSummaryResponse>> getTouristPoints(TouristPointFilterRequest request, @ParameterObject Pageable pageable) {
+    public ResponseEntity<List<TouristPointSummaryResponse>> getTouristPoints(TouristPointFilterRequest request,
+                                                                              @ParameterObject
+                                                                              @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                                              Pageable pageable) {
         return ResponseEntity.ok(touristPointService.findAll(request, pageable).getContent());
     }
 
