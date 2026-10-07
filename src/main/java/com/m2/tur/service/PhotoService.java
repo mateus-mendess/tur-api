@@ -9,6 +9,7 @@ import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.PhotoRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PhotoService {
@@ -34,7 +36,6 @@ public class PhotoService {
     private static final long MAX_FILE_SIZE = 2 * 1024 * 1024L;
     private static final Set<String> ALLOWED_TYPES = Set.of("image/jpeg", "image/png", "image/webp");
 
-    @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
             @CacheEvict(cacheNames = "stats-cache", allEntries = true),
@@ -47,7 +48,7 @@ public class PhotoService {
         TouristPoint touristPoint = touristPointRepository.findById(touristPointId)
                 .orElseThrow(() -> new NotFoundException("Tourist Point Not Found."));
 
-        if (!touristPoint.getUser().equals(user)) {
+        if (!touristPoint.getUser().getId().equals(user.getId())) {
             throw new ForbiddenException("User not allowed to save photos.");
         }
 
@@ -66,11 +67,9 @@ public class PhotoService {
         }
     }
 
-    @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "tourist-point-summary", allEntries = true),
             @CacheEvict(cacheNames = "stats-cache"),
-            @CacheEvict(cacheNames = "tourist-point", key = "#touristPointId")
     })
     public void delete(UUID id) {
         User user  = authService.getAuthenticatedUser()
@@ -86,19 +85,32 @@ public class PhotoService {
             throw new ForbiddenException("User not allowed to save photos.");
         }
 
-        supabaseStorageClient.delete(photo.getPath());
-
         photoRepository.delete(photo);
 
-        cacheManager.getCache("tourist-point").evict(touristPoint.getId());
+        var cache = cacheManager.getCache("tourist-point");
+        if (cache != null) {
+            cache.evict(touristPoint.getId());
+        }
+
+        try {
+            supabaseStorageClient.delete(photo.getPath());
+        } catch (Exception e) {
+            log.error("Failed to delete file from Supabase after database deletion: {}", e.getMessage());
+        }
     }
 
     public void deleteByTouristPoint(TouristPoint touristPoint) {
-        for (Photo photo : touristPoint.getPhotos()) {
-            supabaseStorageClient.delete(photo.getPath());
-        }
+        Set<Photo> photos = touristPoint.getPhotos();
 
         photoRepository.deleteAll(touristPoint.getPhotos());
+
+        for (Photo photo : photos) {
+            try {
+                supabaseStorageClient.delete(photo.getPath());
+            } catch (Exception e) {
+                log.error("Failed to delete orphaned photo from supabase: {}", photo.getPath());
+            }
+        }
     }
 
     private void validate(MultipartFile file, UUID touristPointId) {

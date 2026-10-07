@@ -42,7 +42,7 @@ public class SupabaseStorageClient {
                     .toBodilessEntity();
 
             return filePath;
-        } catch (IOException e) {
+        } catch (IOException | RestClientException e) {
             throw new StorageException("Failed to upload file.");
         }
     }
@@ -52,6 +52,9 @@ public class SupabaseStorageClient {
             restClient.delete()
                     .uri("/" + filePath)
                     .retrieve()
+                    .onStatus(status -> status.value() == 404, ((request, response) -> {
+
+                    }))
                     .toBodilessEntity();
         } catch (RestClientException e) {
             throw new StorageException("Failed to delete file");
