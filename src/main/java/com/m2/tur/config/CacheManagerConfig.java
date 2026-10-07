@@ -16,15 +16,19 @@ public class CacheManagerConfig {
 
         manager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(Duration.ofHours(1))
-                .maximumSize(10_000)
-        );
-
+                .maximumSize(10_000));
         manager.registerCustomCache("user-registration-cache", Caffeine.newBuilder()
-                .expireAfterWrite(Duration.ofMinutes(10)).build());
+                .expireAfterWrite(Duration.ofMinutes(10))
+                .maximumSize(10_000)
+                .build());
         manager.registerCustomCache("password-reset-cache", Caffeine.newBuilder()
-                .expireAfterWrite(Duration.ofMinutes(10)).build());
+                .expireAfterWrite(Duration.ofMinutes(10))
+                .maximumSize(10_000)
+                .build());
         manager.registerCustomCache("password-reset-token", Caffeine.newBuilder()
-                .expireAfterWrite(Duration.ofMinutes(5)).build());
+                .expireAfterWrite(Duration.ofMinutes(5))
+                .maximumSize(10_000)
+                .build());
 
         return manager;
     }
