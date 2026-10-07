@@ -13,7 +13,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "photos")
+@Table(name = "photos", indexes = {
+        @Index(name = "idx_photos_tp_id", columnList = "tourist_point_id")
+})
 @Entity
 public class Photo {
     @Id

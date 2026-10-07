@@ -93,8 +93,6 @@ public class TouristPointService {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
 
-        Address address = addressService.create(request.addressRequest());
-
         Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.categoriesIds()));
 
         Set<AccessibilityTypes> accessibilityTypes = new HashSet<>(
@@ -102,6 +100,8 @@ public class TouristPointService {
         );
 
         validate(request, categories, accessibilityTypes);
+
+        Address address = addressService.create(request.addressRequest());
 
         TouristPoint touristPoint = touristPointMapper.toEntity(request);
         touristPoint.associate(user, address, categories, accessibilityTypes);
@@ -127,8 +127,6 @@ public class TouristPointService {
             throw new ForbiddenException("You don't have permission to update this tourist point");
         }
 
-        Address address = addressService.create(request.addressRequest());
-
         Set<Category> categories = new HashSet<>(categoryRepository.findAllById(request.categoriesIds()));
 
         Set<AccessibilityTypes> accessibilityTypes = new HashSet<>(
@@ -136,6 +134,8 @@ public class TouristPointService {
         );
 
         validate(request, categories, accessibilityTypes);
+
+        Address address = addressService.create(request.addressRequest());
 
         touristPointMapper.updateEntity(request, address, categories, accessibilityTypes, touristPoint);
     }

@@ -13,7 +13,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "comments")
+@Table(name = "comments", indexes = {
+        @Index(name = "idx_comments_tp_id", columnList = "tourist_point_id")
+})
 @Entity
 public class Comment {
     @Id

@@ -16,7 +16,10 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tourist_points")
+@Table(name = "tourist_points", indexes = {
+        @Index(name = "idx_tp_user_id", columnList = "user_id"),
+        @Index(name = "idx_tp_address_id", columnList = "address_id")
+})
 @Entity
 public class TouristPoint {
     @Id
@@ -45,7 +48,10 @@ public class TouristPoint {
     @JoinTable(
             name = "tourist_point_categories",
             joinColumns = @JoinColumn(name = "tourist_point_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
+            inverseJoinColumns = @JoinColumn(name = "category_id"),
+            indexes = {
+                    @Index(name = "idx_tp_cat_category_id", columnList = "category_id")
+            }
     )
     private Set<Category> categories;
 
@@ -53,7 +59,10 @@ public class TouristPoint {
     @JoinTable(
             name = "tourist_point_accessibility_types",
             joinColumns = @JoinColumn(name = "tourist_point_id"),
-            inverseJoinColumns = @JoinColumn(name = "accessibility_id")
+            inverseJoinColumns = @JoinColumn(name = "accessibility_id"),
+            indexes = {
+                    @Index(name = "idx_tp_acc_accessibility_id", columnList = "accessibility_id")
+            }
     )
     private Set<AccessibilityTypes> accessibilityTypes;
 

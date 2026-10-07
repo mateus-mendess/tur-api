@@ -16,7 +16,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Favorites")
+@Table(name = "Favorites", indexes = {
+        @Index(name = "idx_favorites_tp_id", columnList = "tourist_point_id")
+})
 public class Favorite {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
