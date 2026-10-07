@@ -18,10 +18,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AddressService {
     private final GeocodingClient geocodingClient;
-    private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
     private final StateRepository stateRepository;
-    private final TouristPointRepository touristPointRepository;
 
     public Address create(AddressRequest request) {
         Address address = new Address();

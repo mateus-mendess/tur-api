@@ -58,7 +58,7 @@ public class GeocodingClient {
 
             return new CoordinatesResponse(latitude, longitude);
         } catch (RestClientException e) {
-            throw new GeocodingException("Failed to retrieve coordinates: " + e.getMessage());
+            throw new GeocodingException("Failed to retrieve coordinates");
         }
     }
 }

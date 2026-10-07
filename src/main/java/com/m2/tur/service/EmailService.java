@@ -1,9 +1,9 @@
 package com.m2.tur.service;
 
+import com.m2.tur.infra.exception.EmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class EmailService {
@@ -51,7 +50,7 @@ public class EmailService {
 
             mailSender.send(message);
         } catch (MessagingException | MailException e) {
-            log.error("Failed to send email", e);
+            throw new EmailException("Critical failure when attempting to send the verification email");
         }
     }
 }
