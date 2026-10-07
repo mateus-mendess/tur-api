@@ -7,18 +7,19 @@ import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.infra.exception.UnauthorizedException;
 import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.request.TouristPointFilterRequest;
-import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.Favorite;
 import com.m2.tur.model.entity.TouristPoint;
-import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.FavoriteRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,8 +31,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FavoriteServiceTest {

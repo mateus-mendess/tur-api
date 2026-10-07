@@ -9,12 +9,12 @@ import com.m2.tur.model.dto.request.ResetPasswordRequest;
 import com.m2.tur.model.dto.request.VerifyCodeRequest;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 

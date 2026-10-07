@@ -1,8 +1,6 @@
 package com.m2.tur.service;
 
 import com.m2.tur.factory.AddressFactory;
-import com.m2.tur.factory.StateFactory;
-import com.m2.tur.factory.TouristPointFactory;
 import com.m2.tur.infra.client.GeocodingClient;
 import com.m2.tur.infra.exception.GeocodingException;
 import com.m2.tur.infra.exception.NotFoundException;
@@ -11,7 +9,6 @@ import com.m2.tur.model.dto.request.AddressRequest;
 import com.m2.tur.model.dto.response.CoordinatesResponse;
 import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.State;
-import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.repository.AddressRepository;
 import com.m2.tur.model.repository.StateRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
@@ -26,11 +23,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class AddressServiceTest {

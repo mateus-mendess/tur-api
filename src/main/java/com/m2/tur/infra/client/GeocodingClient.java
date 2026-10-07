@@ -3,22 +3,12 @@ package com.m2.tur.infra.client;
 import com.m2.tur.config.GeocodingConfig;
 import com.m2.tur.infra.exception.GeocodingException;
 import com.m2.tur.model.dto.response.CoordinatesResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.util.UriBuilder;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 @Service

@@ -11,7 +11,6 @@ import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.PhotoRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,13 +25,12 @@ import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class PhotoServiceTest {

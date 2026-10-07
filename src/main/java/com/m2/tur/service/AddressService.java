@@ -7,9 +7,7 @@ import com.m2.tur.model.dto.request.AddressRequest;
 import com.m2.tur.model.dto.response.CoordinatesResponse;
 import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.State;
-import com.m2.tur.model.repository.AddressRepository;
 import com.m2.tur.model.repository.StateRepository;
-import com.m2.tur.model.repository.TouristPointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

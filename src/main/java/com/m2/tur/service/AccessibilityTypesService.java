@@ -3,12 +3,11 @@ package com.m2.tur.service;
 import com.m2.tur.mapper.AccessibilityTypesMapper;
 import com.m2.tur.model.dto.response.AccessibilityTypesResponse;
 import com.m2.tur.model.repository.AccessibilityTypesRepository;
-import com.m2.tur.model.repository.TouristPointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service

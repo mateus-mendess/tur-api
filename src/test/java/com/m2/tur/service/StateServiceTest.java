@@ -1,7 +1,6 @@
 package com.m2.tur.service;
 
 import com.m2.tur.factory.StateFactory;
-import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.mapper.StateMapper;
 import com.m2.tur.model.dto.response.StateResponse;
 import com.m2.tur.model.entity.State;
@@ -13,14 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Bean;
 
 import java.util.List;
-import java.util.Optional;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class StateServiceTest {

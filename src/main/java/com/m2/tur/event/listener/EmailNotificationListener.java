@@ -1,9 +1,7 @@
 package com.m2.tur.event.listener;
 
 import com.m2.tur.event.UserRegisteredEvent;
-import com.m2.tur.service.EmailService;
 import com.m2.tur.service.EmailVerificationService;
-import com.m2.tur.service.OtpCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;

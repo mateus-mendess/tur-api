@@ -5,7 +5,6 @@ import com.m2.tur.model.dto.request.TouristPointRequest;
 import com.m2.tur.model.dto.response.CommentResponse;
 import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
-import com.m2.tur.model.entity.Comment;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
 

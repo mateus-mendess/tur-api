@@ -1,13 +1,11 @@
 package com.m2.tur.controller;
 
 import com.m2.tur.model.dto.request.TouristPointFilterRequest;
-import com.m2.tur.model.dto.response.TouristPointResponse;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.service.TouristPointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;

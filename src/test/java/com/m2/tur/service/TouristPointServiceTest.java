@@ -1,6 +1,8 @@
 package com.m2.tur.service;
 
-import com.m2.tur.factory.*;
+import com.m2.tur.factory.AddressFactory;
+import com.m2.tur.factory.TouristPointFactory;
+import com.m2.tur.factory.UserFactory;
 import com.m2.tur.infra.exception.*;
 import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.request.AddressRequest;
@@ -30,8 +32,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TouristPointServiceTest {

@@ -5,20 +5,18 @@ import com.m2.tur.infra.exception.UnauthorizedException;
 import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.dto.request.TouristPointFilterRequest;
 import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
-import com.m2.tur.model.entity.Favorite;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.FavoriteRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import com.m2.tur.model.repository.TouristPointSpecification;
-import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 

@@ -4,7 +4,6 @@ import com.m2.tur.config.CookieUtil;
 import com.m2.tur.infra.exception.UnauthorizedException;
 import com.m2.tur.infra.security.jwt.JwtService;
 import com.m2.tur.model.dto.request.AuthenticationRequest;
-import com.m2.tur.model.dto.response.AuthenticationResponse;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
