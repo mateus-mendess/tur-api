@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -17,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Comments", description = "Endpoints for listing and submitting comments on tourist points.")
@@ -35,11 +35,11 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "Comments retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID touristPointId,
+    public ResponseEntity<Page<CommentResponse>> getComments(@PathVariable UUID touristPointId,
                                                              @ParameterObject
                                                              @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                              Pageable pageable) {
-        return ResponseEntity.ok(commentService.findAllComments(touristPointId, pageable).getContent());
+        return ResponseEntity.ok(commentService.findAllComments(touristPointId, pageable));
     }
 
     @Operation(summary = "Post a comment about a tourist point.", description = """
