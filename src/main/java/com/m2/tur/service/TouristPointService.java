@@ -38,6 +38,7 @@ public class TouristPointService {
     private final CommentRepository commentRepository;
 
     @Cacheable(cacheNames = "tourist-point-summary", key = "#request + '-' + #pageable")
+    @Transactional(readOnly = true)
     public Page<TouristPointSummaryResponse> findAll(TouristPointFilterRequest request, Pageable pageable) {
         for (Sort.Order order : pageable.getSort()) {
             if (!order.getProperty().equals("createdAt")) {
@@ -55,6 +56,7 @@ public class TouristPointService {
     }
 
     @Cacheable(cacheNames = "tourist-point", key = "#id")
+    @Transactional(readOnly = true)
     public TouristPointResponse findById(UUID id) {
         TouristPoint touristPoint = touristPointRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("TouristPoint not found"));
@@ -64,6 +66,7 @@ public class TouristPointService {
         return touristPointMapper.toResponse(touristPoint, averageRating);
     }
 
+    @Transactional(readOnly = true)
     public Page<TouristPointSummaryResponse> findMyTouristPoints(TouristPointFilterRequest request, Pageable pageable) {
         for (Sort.Order order : pageable.getSort()) {
             if (!order.getProperty().equals("createdAt")) {

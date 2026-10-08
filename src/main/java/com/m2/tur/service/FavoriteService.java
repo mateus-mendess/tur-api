@@ -28,6 +28,7 @@ public class FavoriteService {
     private final TouristPointMapper touristPointMapper;
     private final AuthService authService;
 
+    @Transactional(readOnly = true)
     public Page<TouristPointSummaryResponse> findMyFavorites(TouristPointFilterRequest request, Pageable pageable) {
         for (Sort.Order order : pageable.getSort()) {
             if (!order.getProperty().equals("createdAt")) {
