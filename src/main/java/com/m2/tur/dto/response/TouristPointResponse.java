@@ -22,7 +22,5 @@ public record TouristPointResponse(
 
         String userName,
 
-        Set<CommentResponse> comments,
-
         UUID userId
 ) {}

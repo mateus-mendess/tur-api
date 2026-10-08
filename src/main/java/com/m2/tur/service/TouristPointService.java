@@ -58,7 +58,7 @@ public class TouristPointService {
         TouristPoint touristPoint = touristPointRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("TouristPoint not found"));
 
-        Double averageRating = commentRepository.findAverageRatingByTouristPointId(id);
+        Double averageRating = commentRepository.findAverageRatingByTouristPointId(touristPoint.getId());
 
         return touristPointMapper.toResponse(touristPoint, averageRating);
     }
