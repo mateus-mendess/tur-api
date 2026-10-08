@@ -12,6 +12,6 @@ import java.util.UUID;
 
 public interface TouristPointRepository extends JpaRepository<TouristPoint, UUID>, JpaSpecificationExecutor<TouristPoint> {
     @Override
-    @EntityGraph(attributePaths = {"user", "address"})
+    @EntityGraph(attributePaths = {"address"})
     Page<TouristPoint> findAll(Specification<TouristPoint> spec, Pageable pageable);
 }

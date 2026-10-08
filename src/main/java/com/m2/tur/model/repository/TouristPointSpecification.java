@@ -29,7 +29,7 @@ public class TouristPointSpecification {
         };
     }
 
-    public static Specification<TouristPoint> byCategory(Long categoryId) {
+    public static Specification<TouristPoint> byCategory(UUID categoryId) {
         return (root, query, builder) -> {
             if (categoryId == null) return builder.conjunction();
 
@@ -39,7 +39,7 @@ public class TouristPointSpecification {
         };
     }
 
-    public static Specification<TouristPoint> byAccessibility(UUID accessibilityId) {
+    public static Specification<TouristPoint> byAccessibility(Long accessibilityId) {
         return (root, query, builder) -> {
             if (accessibilityId == null) return builder.conjunction();
 
