@@ -6,11 +6,11 @@ import com.m2.tur.core.validation.PageableGuard;
 import com.m2.tur.dto.request.TouristPointFilterRequest;
 import com.m2.tur.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.mapper.TouristPointMapper;
-import com.m2.tur.model.entity.TouristPoint;
+import com.m2.tur.model.entity.Favorite;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.FavoriteRepository;
+import com.m2.tur.model.repository.FavoriteSpecification;
 import com.m2.tur.model.repository.TouristPointRepository;
-import com.m2.tur.model.repository.TouristPointSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,13 +36,14 @@ public class FavoriteService {
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User is not logged in"));
 
-        Specification<TouristPoint> spec = TouristPointSpecification.favoritesByUser(user.getId())
-                .and(TouristPointSpecification.byCity(request.city()))
-                .and(TouristPointSpecification.byState(request.stateId()))
-                .and(TouristPointSpecification.byCategory(request.categoryId()))
-                .and(TouristPointSpecification.byAccessibility(request.accessibilityId()));
+        Specification<Favorite> spec = FavoriteSpecification.byUser(user.getId())
+                .and(FavoriteSpecification.byCity(request.city()))
+                .and(FavoriteSpecification.byState(request.stateId()))
+                .and(FavoriteSpecification.byCategory(request.categoryId()))
+                .and(FavoriteSpecification.byAccessibility(request.accessibilityId()));
 
-        return touristPointRepository.findAll(spec, pageable)
+        return favoriteRepository.findAll(spec, pageable)
+                .map(Favorite::getTouristPoint)
                 .map(touristPointMapper::toSummaryResponse);
     }
 

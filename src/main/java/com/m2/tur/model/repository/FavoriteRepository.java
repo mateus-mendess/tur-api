@@ -1,16 +1,19 @@
 package com.m2.tur.model.repository;
 
 import com.m2.tur.model.entity.Favorite;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
 public interface FavoriteRepository extends JpaRepository<Favorite, UUID>, JpaSpecificationExecutor<Favorite> {
+    @EntityGraph(attributePaths = {"touristPoint", "touristPoint.address"})
+    Page<Favorite> findAll(Specification<Favorite> spec, Pageable pageable);
+
     @Modifying
     @Query(value = """ 
             INSERT INTO favorites (id, user_id, tourist_point_id)
