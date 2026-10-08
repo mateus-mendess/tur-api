@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -32,8 +34,10 @@ public class TouristPoint {
 
     private Boolean active;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -72,17 +76,6 @@ public class TouristPoint {
     @OneToMany(mappedBy = "touristPoint", fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Comment> comments;
-
-    @PrePersist
-    public void prePersist() {
-        this.active = true;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 
     public void associate(User user,
                           Address address,

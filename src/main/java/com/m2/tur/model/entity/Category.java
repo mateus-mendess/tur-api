@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -22,17 +23,10 @@ public class Category {
 
     private String name;
 
-    private Boolean active;
-
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @PrePersist
-    public void prePersist() {
-        this.active = true;
-        this.createdAt = LocalDateTime.now();
-    }
 }

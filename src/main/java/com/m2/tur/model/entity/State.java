@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -24,13 +25,9 @@ public class State {
 
     private String abbreviation;
 
+    @CreationTimestamp
     private LocalDate createdAt;
 
     @OneToMany(mappedBy = "state")
     private Set<Address> addresses;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDate.now();
-    }
 }

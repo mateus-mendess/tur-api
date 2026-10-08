@@ -2,6 +2,8 @@ package com.m2.tur.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -27,9 +29,11 @@ public class User {
 
     private Boolean active;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -42,11 +46,5 @@ public class User {
     @PrePersist
     private void prePersist() {
         this.active = false;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    private void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
     }
 }

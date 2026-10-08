@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class Address {
 
     private Double longitude;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "address")
@@ -43,9 +45,4 @@ public class Address {
     @ManyToOne
     @JoinColumn(name = "state_id")
     private State state;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
 }
