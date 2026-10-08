@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +35,10 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "Comments retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID touristPointId, @ParameterObject Pageable pageable) {
+    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID touristPointId,
+                                                             @ParameterObject
+                                                             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+                                                             Pageable pageable) {
         return ResponseEntity.ok(commentService.findAllComments(touristPointId, pageable).getContent());
     }
 
