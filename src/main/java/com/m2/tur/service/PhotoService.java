@@ -81,7 +81,7 @@ public class PhotoService {
                 .orElseThrow(() -> new NotFoundException("Tourist Point Not Found."));
 
         if (!touristPoint.getUser().equals(user)) {
-            throw new ForbiddenException("User not allowed to save photos.");
+            throw new ForbiddenException("User not allowed to delete this photo.");
         }
 
         photoRepository.delete(photo);
