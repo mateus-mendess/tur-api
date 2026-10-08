@@ -32,8 +32,6 @@ public class TouristPoint {
 
     private String description;
 
-    private Boolean active;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
