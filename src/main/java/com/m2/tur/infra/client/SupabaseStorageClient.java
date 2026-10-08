@@ -1,7 +1,7 @@
 package com.m2.tur.infra.client;
 
 import com.m2.tur.config.SupabaseConfig;
-import com.m2.tur.infra.exception.StorageException;
+import com.m2.tur.core.exception.StorageException;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;

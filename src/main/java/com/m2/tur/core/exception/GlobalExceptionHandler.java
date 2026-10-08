@@ -1,4 +1,4 @@
-package com.m2.tur.infra.exception;
+package com.m2.tur.core.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

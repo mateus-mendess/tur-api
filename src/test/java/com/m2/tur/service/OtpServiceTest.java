@@ -1,6 +1,6 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.InvalidOtpCodeException;
+import com.m2.tur.core.exception.InvalidOtpCodeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

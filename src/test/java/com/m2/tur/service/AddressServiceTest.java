@@ -2,8 +2,8 @@ package com.m2.tur.service;
 
 import com.m2.tur.factory.AddressFactory;
 import com.m2.tur.infra.client.GeocodingClient;
-import com.m2.tur.infra.exception.GeocodingException;
-import com.m2.tur.infra.exception.NotFoundException;
+import com.m2.tur.core.exception.GeocodingException;
+import com.m2.tur.core.exception.NotFoundException;
 import com.m2.tur.mapper.AddressMapper;
 import com.m2.tur.dto.request.AddressRequest;
 import com.m2.tur.dto.response.CoordinatesResponse;

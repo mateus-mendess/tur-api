@@ -1,6 +1,6 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.EmailException;
+import com.m2.tur.core.exception.EmailException;
 import jakarta.mail.Address;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

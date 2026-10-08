@@ -2,7 +2,7 @@ package com.m2.tur.service;
 
 import com.m2.tur.event.UserRegisteredEvent;
 import com.m2.tur.factory.UserFactory;
-import com.m2.tur.infra.exception.EmailAlreadyExistsException;
+import com.m2.tur.core.exception.EmailAlreadyExistsException;
 import com.m2.tur.mapper.UserMapper;
 import com.m2.tur.dto.request.UserRequest;
 import com.m2.tur.dto.response.UserResponse;

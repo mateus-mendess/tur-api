@@ -1,4 +1,4 @@
-package com.m2.tur.infra.exception;
+package com.m2.tur.core.exception;
 
 public record FieldErrorDetails(
         String field,

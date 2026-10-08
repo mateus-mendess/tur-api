@@ -1,6 +1,6 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.InvalidOtpCodeException;
+import com.m2.tur.core.exception.InvalidOtpCodeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;

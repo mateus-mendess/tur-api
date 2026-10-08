@@ -2,7 +2,7 @@ package com.m2.tur.service;
 
 import com.m2.tur.factory.CommentFactory;
 import com.m2.tur.factory.TouristPointFactory;
-import com.m2.tur.infra.exception.NotFoundException;
+import com.m2.tur.core.exception.NotFoundException;
 import com.m2.tur.mapper.CommentMapper;
 import com.m2.tur.dto.request.CommentRequest;
 import com.m2.tur.dto.response.CommentResponse;

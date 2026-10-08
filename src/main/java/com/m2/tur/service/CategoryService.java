@@ -1,7 +1,7 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.CategoryAlreadyExistsException;
-import com.m2.tur.infra.exception.NotFoundException;
+import com.m2.tur.core.exception.CategoryAlreadyExistsException;
+import com.m2.tur.core.exception.NotFoundException;
 import com.m2.tur.mapper.CategoryMapper;
 import com.m2.tur.dto.request.CategoryRequest;
 import com.m2.tur.dto.response.CategoryResponse;

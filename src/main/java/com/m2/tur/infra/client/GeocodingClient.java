@@ -1,7 +1,7 @@
 package com.m2.tur.infra.client;
 
 import com.m2.tur.config.GeocodingConfig;
-import com.m2.tur.infra.exception.GeocodingException;
+import com.m2.tur.core.exception.GeocodingException;
 import com.m2.tur.dto.response.CoordinatesResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;

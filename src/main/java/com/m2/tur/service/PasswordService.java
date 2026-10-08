@@ -1,9 +1,9 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.InvalidCurrentPasswordException;
-import com.m2.tur.infra.exception.InvalidOtpCodeException;
-import com.m2.tur.infra.exception.NotFoundException;
-import com.m2.tur.infra.exception.UnauthorizedException;
+import com.m2.tur.core.exception.InvalidCurrentPasswordException;
+import com.m2.tur.core.exception.InvalidOtpCodeException;
+import com.m2.tur.core.exception.NotFoundException;
+import com.m2.tur.core.exception.UnauthorizedException;
 import com.m2.tur.dto.request.ChangePasswordRequest;
 import com.m2.tur.dto.request.ResetPasswordRequest;
 import com.m2.tur.dto.request.VerifyCodeRequest;
