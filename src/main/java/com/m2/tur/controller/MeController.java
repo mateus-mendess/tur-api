@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -15,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,10 +33,10 @@ public class MeController {
             @ApiResponse(responseCode = "401", description = "User not authenticated")
     })
     @GetMapping("/tourist-points")
-    public ResponseEntity<List<TouristPointSummaryResponse>> listMyTouristPoints(TouristPointFilterRequest request,
+    public ResponseEntity<Page<TouristPointSummaryResponse>> listMyTouristPoints(TouristPointFilterRequest request,
                                                                                  @ParameterObject
                                                                                  @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                                  Pageable pageable) {
-        return ResponseEntity.ok(touristPointService.findMyTouristPoints(request, pageable).getContent());
+        return ResponseEntity.ok(touristPointService.findMyTouristPoints(request, pageable));
     }
 }

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Tourist Points", description = "Endpoints for listing, creating, updating and removing tourist points.")
@@ -37,11 +37,11 @@ public class TouristPointController {
             @ApiResponse(responseCode = "200", description = "Tourist points retrieved successfully.")
     })
     @GetMapping
-    public ResponseEntity<List<TouristPointSummaryResponse>> getTouristPoints(TouristPointFilterRequest request,
+    public ResponseEntity<Page<TouristPointSummaryResponse>> getTouristPoints(TouristPointFilterRequest request,
                                                                               @ParameterObject
                                                                               @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
                                                                               Pageable pageable) {
-        return ResponseEntity.ok(touristPointService.findAll(request, pageable).getContent());
+        return ResponseEntity.ok(touristPointService.findAll(request, pageable));
     }
 
     @Operation(summary = "List a tourist point.", description = """
