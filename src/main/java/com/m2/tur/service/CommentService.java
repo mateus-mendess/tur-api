@@ -1,6 +1,7 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.NotFoundException;
+import com.m2.tur.core.exception.NotFoundException;
+import com.m2.tur.core.validation.PageableGuard;
 import com.m2.tur.mapper.CommentMapper;
 import com.m2.tur.dto.request.CommentRequest;
 import com.m2.tur.dto.response.CommentResponse;
@@ -23,8 +24,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final TouristPointRepository touristPointRepository;
+    private final PageableGuard pageableGuard;
 
     public Page<CommentResponse> findAllComments(UUID touristPointId, Pageable pageable) {
+        pageableGuard.pageableValidate(pageable);
+
         return commentRepository.findAllByTouristPointId(touristPointId, pageable)
                 .map(commentMapper::toResponse);
     }

@@ -1,13 +1,14 @@
 package com.m2.tur.service;
 
-import com.m2.tur.infra.exception.ForbiddenException;
-import com.m2.tur.infra.exception.NotFoundException;
-import com.m2.tur.infra.exception.UnauthorizedException;
-import com.m2.tur.mapper.TouristPointMapper;
+import com.m2.tur.core.exception.ForbiddenException;
+import com.m2.tur.core.exception.NotFoundException;
+import com.m2.tur.core.exception.UnauthorizedException;
+import com.m2.tur.core.validation.PageableGuard;
 import com.m2.tur.dto.request.TouristPointFilterRequest;
 import com.m2.tur.dto.request.TouristPointRequest;
 import com.m2.tur.dto.response.TouristPointResponse;
 import com.m2.tur.dto.response.TouristPointSummaryResponse;
+import com.m2.tur.mapper.TouristPointMapper;
 import com.m2.tur.model.entity.*;
 import com.m2.tur.model.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,15 +36,12 @@ public class TouristPointService {
     private final CategoryRepository categoryRepository;
     private final AccessibilityTypesRepository accessibilityTypesRepository;
     private final CommentRepository commentRepository;
+    private final PageableGuard pageableGuard;
 
     @Cacheable(cacheNames = "tourist-point-summary", key = "#request + '-' + #pageable")
     @Transactional(readOnly = true)
     public Page<TouristPointSummaryResponse> findAll(TouristPointFilterRequest request, Pageable pageable) {
-        for (Sort.Order order : pageable.getSort()) {
-            if (!order.getProperty().equals("createdAt")) {
-                throw new IllegalArgumentException("Dynamic sorting blocked.");
-            }
-        }
+        pageableGuard.pageableValidate(pageable);
 
         Specification<TouristPoint> spec = TouristPointSpecification.byCity(request.city())
                 .and(TouristPointSpecification.byState(request.stateId()))
@@ -68,11 +65,7 @@ public class TouristPointService {
 
     @Transactional(readOnly = true)
     public Page<TouristPointSummaryResponse> findMyTouristPoints(TouristPointFilterRequest request, Pageable pageable) {
-        for (Sort.Order order : pageable.getSort()) {
-            if (!order.getProperty().equals("createdAt")) {
-                throw new IllegalArgumentException("Dynamic sorting blocked.");
-            }
-        }
+        pageableGuard.pageableValidate(pageable);
 
         User user = authService.getAuthenticatedUser()
                 .orElseThrow(() -> new UnauthorizedException("User not logged in."));
