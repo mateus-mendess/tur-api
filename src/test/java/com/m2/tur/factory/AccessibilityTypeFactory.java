@@ -1,6 +1,6 @@
 package com.m2.tur.factory;
 
-import com.m2.tur.model.dto.response.AccessibilityTypesResponse;
+import com.m2.tur.dto.response.AccessibilityTypesResponse;
 import com.m2.tur.model.entity.AccessibilityTypes;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package com.m2.tur.controller;
 
-import com.m2.tur.model.dto.response.StatsResponse;
+import com.m2.tur.dto.response.StatsResponse;
 import com.m2.tur.service.StatsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

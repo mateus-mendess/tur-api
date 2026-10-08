@@ -1,7 +1,7 @@
 package com.m2.tur.controller;
 
-import com.m2.tur.model.dto.request.CommentRequest;
-import com.m2.tur.model.dto.response.CommentResponse;
+import com.m2.tur.dto.request.CommentRequest;
+import com.m2.tur.dto.response.CommentResponse;
 import com.m2.tur.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

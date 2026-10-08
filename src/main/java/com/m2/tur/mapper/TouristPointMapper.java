@@ -1,8 +1,8 @@
 package com.m2.tur.mapper;
 
-import com.m2.tur.model.dto.request.TouristPointRequest;
-import com.m2.tur.model.dto.response.TouristPointResponse;
-import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
+import com.m2.tur.dto.request.TouristPointRequest;
+import com.m2.tur.dto.response.TouristPointResponse;
+import com.m2.tur.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.AccessibilityTypes;
 import com.m2.tur.model.entity.Address;
 import com.m2.tur.model.entity.Category;

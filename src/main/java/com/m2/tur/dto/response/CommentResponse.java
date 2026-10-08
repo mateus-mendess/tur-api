@@ -1,4 +1,4 @@
-package com.m2.tur.model.dto.response;
+package com.m2.tur.dto.response;
 
 public record CommentResponse(
         String content,

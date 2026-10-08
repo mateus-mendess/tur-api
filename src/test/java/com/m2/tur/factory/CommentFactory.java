@@ -1,7 +1,7 @@
 package com.m2.tur.factory;
 
-import com.m2.tur.model.dto.request.CommentRequest;
-import com.m2.tur.model.dto.response.CommentResponse;
+import com.m2.tur.dto.request.CommentRequest;
+import com.m2.tur.dto.response.CommentResponse;
 import com.m2.tur.model.entity.Comment;
 
 import java.time.LocalDateTime;

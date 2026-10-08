@@ -1,7 +1,7 @@
 package com.m2.tur.factory;
 
-import com.m2.tur.model.dto.request.AddressRequest;
-import com.m2.tur.model.dto.response.AddressResponse;
+import com.m2.tur.dto.request.AddressRequest;
+import com.m2.tur.dto.response.AddressResponse;
 import com.m2.tur.model.entity.Address;
 
 import java.time.LocalDateTime;

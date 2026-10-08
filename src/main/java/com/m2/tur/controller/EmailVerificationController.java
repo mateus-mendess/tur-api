@@ -1,8 +1,8 @@
 package com.m2.tur.controller;
 
 
-import com.m2.tur.model.dto.request.ResendVerificationRequest;
-import com.m2.tur.model.dto.request.VerifyCodeRequest;
+import com.m2.tur.dto.request.ResendVerificationRequest;
+import com.m2.tur.dto.request.VerifyCodeRequest;
 import com.m2.tur.service.EmailVerificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

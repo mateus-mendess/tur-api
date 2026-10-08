@@ -1,6 +1,6 @@
 package com.m2.tur.controller;
 
-import com.m2.tur.model.dto.request.AuthenticationRequest;
+import com.m2.tur.dto.request.AuthenticationRequest;
 import com.m2.tur.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

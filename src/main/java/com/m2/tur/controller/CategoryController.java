@@ -1,7 +1,7 @@
 package com.m2.tur.controller;
 
-import com.m2.tur.model.dto.request.CategoryRequest;
-import com.m2.tur.model.dto.response.CategoryResponse;
+import com.m2.tur.dto.request.CategoryRequest;
+import com.m2.tur.dto.response.CategoryResponse;
 import com.m2.tur.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

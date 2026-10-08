@@ -1,4 +1,4 @@
-package com.m2.tur.model.dto.request;
+package com.m2.tur.dto.request;
 
 import java.util.UUID;
 

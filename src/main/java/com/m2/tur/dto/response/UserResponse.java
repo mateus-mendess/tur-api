@@ -1,4 +1,4 @@
-package com.m2.tur.model.dto.response;
+package com.m2.tur.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -1,9 +1,9 @@
 package com.m2.tur.controller;
 
-import com.m2.tur.model.dto.request.TouristPointFilterRequest;
-import com.m2.tur.model.dto.request.TouristPointRequest;
-import com.m2.tur.model.dto.response.TouristPointResponse;
-import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
+import com.m2.tur.dto.request.TouristPointFilterRequest;
+import com.m2.tur.dto.request.TouristPointRequest;
+import com.m2.tur.dto.response.TouristPointResponse;
+import com.m2.tur.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.service.TouristPointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

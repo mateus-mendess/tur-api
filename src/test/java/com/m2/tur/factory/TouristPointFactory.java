@@ -1,10 +1,10 @@
 package com.m2.tur.factory;
 
-import com.m2.tur.model.dto.request.TouristPointFilterRequest;
-import com.m2.tur.model.dto.request.TouristPointRequest;
-import com.m2.tur.model.dto.response.CommentResponse;
-import com.m2.tur.model.dto.response.TouristPointResponse;
-import com.m2.tur.model.dto.response.TouristPointSummaryResponse;
+import com.m2.tur.dto.request.TouristPointFilterRequest;
+import com.m2.tur.dto.request.TouristPointRequest;
+import com.m2.tur.dto.response.CommentResponse;
+import com.m2.tur.dto.response.TouristPointResponse;
+import com.m2.tur.dto.response.TouristPointSummaryResponse;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.entity.User;
 

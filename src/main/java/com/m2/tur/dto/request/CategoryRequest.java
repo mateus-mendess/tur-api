@@ -1,4 +1,4 @@
-package com.m2.tur.model.dto.request;
+package com.m2.tur.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

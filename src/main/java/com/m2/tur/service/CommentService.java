@@ -2,8 +2,8 @@ package com.m2.tur.service;
 
 import com.m2.tur.infra.exception.NotFoundException;
 import com.m2.tur.mapper.CommentMapper;
-import com.m2.tur.model.dto.request.CommentRequest;
-import com.m2.tur.model.dto.response.CommentResponse;
+import com.m2.tur.dto.request.CommentRequest;
+import com.m2.tur.dto.response.CommentResponse;
 import com.m2.tur.model.entity.Comment;
 import com.m2.tur.model.entity.TouristPoint;
 import com.m2.tur.model.repository.CommentRepository;

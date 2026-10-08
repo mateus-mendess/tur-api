@@ -1,6 +1,6 @@
 package com.m2.tur.factory;
 
-import com.m2.tur.model.dto.response.StateResponse;
+import com.m2.tur.dto.response.StateResponse;
 import com.m2.tur.model.entity.State;
 
 import java.time.LocalDate;

@@ -1,9 +1,9 @@
 package com.m2.tur.controller;
 
-import com.m2.tur.model.dto.request.ChangePasswordRequest;
-import com.m2.tur.model.dto.request.ForgotPasswordRequest;
-import com.m2.tur.model.dto.request.ResetPasswordRequest;
-import com.m2.tur.model.dto.request.VerifyCodeRequest;
+import com.m2.tur.dto.request.ChangePasswordRequest;
+import com.m2.tur.dto.request.ForgotPasswordRequest;
+import com.m2.tur.dto.request.ResetPasswordRequest;
+import com.m2.tur.dto.request.VerifyCodeRequest;
 import com.m2.tur.service.PasswordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

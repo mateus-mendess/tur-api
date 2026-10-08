@@ -2,7 +2,7 @@ package com.m2.tur.service;
 
 import com.m2.tur.factory.StateFactory;
 import com.m2.tur.mapper.StateMapper;
-import com.m2.tur.model.dto.response.StateResponse;
+import com.m2.tur.dto.response.StateResponse;
 import com.m2.tur.model.entity.State;
 import com.m2.tur.model.repository.StateRepository;
 import org.junit.jupiter.api.BeforeEach;

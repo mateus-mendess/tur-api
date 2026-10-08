@@ -3,7 +3,7 @@ package com.m2.tur.service;
 import com.m2.tur.factory.UserFactory;
 import com.m2.tur.infra.exception.InvalidOtpCodeException;
 import com.m2.tur.infra.exception.NotFoundException;
-import com.m2.tur.model.dto.request.VerifyCodeRequest;
+import com.m2.tur.dto.request.VerifyCodeRequest;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

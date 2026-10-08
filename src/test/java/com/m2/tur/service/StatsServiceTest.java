@@ -1,6 +1,6 @@
 package com.m2.tur.service;
 
-import com.m2.tur.model.dto.response.StatsResponse;
+import com.m2.tur.dto.response.StatsResponse;
 import com.m2.tur.model.repository.PhotoRepository;
 import com.m2.tur.model.repository.TouristPointRepository;
 import com.m2.tur.model.repository.UserRepository;

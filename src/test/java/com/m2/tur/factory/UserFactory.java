@@ -1,7 +1,7 @@
 package com.m2.tur.factory;
 
-import com.m2.tur.model.dto.request.UserRequest;
-import com.m2.tur.model.dto.response.UserResponse;
+import com.m2.tur.dto.request.UserRequest;
+import com.m2.tur.dto.response.UserResponse;
 import com.m2.tur.model.entity.User;
 
 import java.time.LocalDateTime;

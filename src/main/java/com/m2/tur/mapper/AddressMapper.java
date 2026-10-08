@@ -1,6 +1,6 @@
 package com.m2.tur.mapper;
 
-import com.m2.tur.model.dto.request.AddressRequest;
+import com.m2.tur.dto.request.AddressRequest;
 import com.m2.tur.model.entity.Address;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

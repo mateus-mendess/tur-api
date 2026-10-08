@@ -1,6 +1,6 @@
 package com.m2.tur.mapper;
 
-import com.m2.tur.model.dto.response.PhotoResponse;
+import com.m2.tur.dto.response.PhotoResponse;
 import com.m2.tur.model.entity.Photo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
