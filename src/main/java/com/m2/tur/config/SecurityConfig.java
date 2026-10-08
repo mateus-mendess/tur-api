@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/forgot-password").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/forgot-password/verify").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users/resend-verification").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/tourist-points/{touristPointId}/comments").permitAll()
                                 .requestMatchers(HttpMethod.PATCH, "/users/verify").permitAll()
                                 .requestMatchers(HttpMethod.PATCH, "/users/reset-password").permitAll()
