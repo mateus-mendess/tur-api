@@ -8,24 +8,25 @@
 		<version>4.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.m2</groupId>
-	<artifactId>tur</artifactId>
+	<groupId>br.com.m2</groupId>
+	<artifactId>tur-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>tur-api</name>
+	<description>REST API for discovering and sharing tourist points across Brazil.</description>
 	<url/>
 	<licenses>
-		<license/>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+		</license>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<id>mendes</id>
+			<name>Mateus Mendes</name>
+			<url>https://github.com/mateus-mendess</url>
+		</developer>
 	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
 	<properties>
 		<java.version>21</java.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
