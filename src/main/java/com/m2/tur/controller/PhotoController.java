@@ -51,7 +51,7 @@ public class PhotoController {
             Requires authentication. Only the owner can remove photos.
             """)
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Photo removed successfully."),
+            @ApiResponse(responseCode = "204", description = "Photo removed successfully."),
             @ApiResponse(responseCode = "401", description = "User not authenticated."),
             @ApiResponse(responseCode = "403", description = "User not allowed to remove this photo."),
             @ApiResponse(responseCode = "404", description = "Tourist point or photo not found."),

@@ -154,7 +154,7 @@ public class TouristPointService {
                 .orElseThrow(() -> new NotFoundException("Tourist Point not found"));
 
         if (!touristPoint.getUser().equals(user)) {
-            throw new ForbiddenException("You don't have permission to update this tourist point");
+            throw new ForbiddenException("You don't have permission to delete this tourist point");
         }
 
         photoService.deleteByTouristPoint(touristPoint);

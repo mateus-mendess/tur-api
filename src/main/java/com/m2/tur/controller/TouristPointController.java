@@ -83,8 +83,9 @@ public class TouristPointController {
     }
 
     @Operation(summary = "Updates tourist point information", description = """
-            Partially updates the information of a specific tourist point.
-            Requires authentication. Only the owner can update.
+        Replaces the name, description, address, categories and accessibility
+        types of a specific tourist point with the values sent. All fields are required.
+        Requires authentication. Only the owner can update.
             """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tourist point updated successfully."),
