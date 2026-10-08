@@ -31,7 +31,7 @@ public class TouristPointController {
     private final TouristPointService touristPointService;
 
     @Operation(summary = "Lists all registered tourist points.", description = """
-            Returns all active tourist points registered in the platform.
+            Returns all tourist points registered in the platform.
             """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tourist points retrieved successfully.")
