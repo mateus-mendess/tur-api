@@ -80,7 +80,7 @@ public class PhotoService {
         TouristPoint touristPoint = touristPointRepository.findById(photo.getTouristPoint().getId())
                 .orElseThrow(() -> new NotFoundException("Tourist Point Not Found."));
 
-        if (!touristPoint.getUser().equals(user)) {
+        if (!touristPoint.getUser().getId().equals(user.getId())) {
             throw new ForbiddenException("User not allowed to delete this photo.");
         }
 
