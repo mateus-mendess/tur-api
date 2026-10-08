@@ -12,4 +12,8 @@ public record VerifyCodeRequest(
         @NotBlank(message = "Code required")
         @Size(min = 6, max = 6)
         String code
-) {}
+) {
+        public VerifyCodeRequest {
+                email = email.trim().toLowerCase();
+        }
+}

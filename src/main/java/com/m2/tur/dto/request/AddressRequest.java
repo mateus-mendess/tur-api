@@ -7,18 +7,18 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record AddressRequest(
-        @Size(min = 5, max = 60)
+        @Size(max = 60)
         @NotBlank(message = "street required.")
         String street,
 
-        @Size(min = 5, max = 40)
+        @Size(max = 40)
         String complement,
 
-        @Size(min = 5, max = 60)
+        @Size(max = 60)
         @NotBlank(message = "neighborhood required.")
         String neighborhood,
 
-        @Size(min = 3, max = 60)
+        @Size(max = 60)
         @NotBlank(message = "city required.")
         String city,
 

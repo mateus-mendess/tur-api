@@ -7,7 +7,7 @@ public record TouristPointFilterRequest(
 
         Long stateId,
 
-        Long categoryId,
+        UUID categoryId,
 
-        UUID accessibilityId
+        Long accessibilityId
 ) {}

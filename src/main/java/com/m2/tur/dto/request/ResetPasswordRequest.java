@@ -13,7 +13,7 @@ public record ResetPasswordRequest(
 
         @Size(min = 8, max = 72)
         @NotBlank(message = "Password required")
-        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d])$",
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).+$",
         message = "The password must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters")
         String newPassword,
 

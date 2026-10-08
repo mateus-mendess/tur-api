@@ -9,4 +9,8 @@ public record ResendVerificationRequest(
         @NotBlank(message = "Email required")
         @Email(message = "Email invalid.")
         String email
-) {}
+) {
+        public ResendVerificationRequest {
+                email = email.trim().toLowerCase();
+        }
+}

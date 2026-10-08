@@ -21,6 +21,7 @@ public record TouristPointRequest(
         @NotNull
         Set<Long> accessibilityTypesIds,
 
+        @NotNull
         @Valid
         AddressRequest addressRequest,
 

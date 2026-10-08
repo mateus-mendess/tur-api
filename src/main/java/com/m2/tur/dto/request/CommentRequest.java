@@ -16,7 +16,7 @@ public record CommentRequest(
         @Schema(description = "author name. Only letters and spaces allowed.", example = "Mateus Mendes")
         @Size(min = 2, max = 100)
         @NotBlank(message = "name required.")
-        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]$",
+        @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ ]+$",
                 message = "invalid name.")
         String authorName
 ) {}
