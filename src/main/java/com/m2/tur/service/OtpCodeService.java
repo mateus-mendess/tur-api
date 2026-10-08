@@ -48,12 +48,10 @@ public class OtpCodeService {
         Cache cache = cacheManager.getCache(cacheName);
         OtpData otp = cache.get(userId, OtpData.class);
 
-        if (otp == null || !otp.matches(inputCode)) throw new InvalidOtpCodeException("Code expired or invalid");
+        if (otp == null) throw new InvalidOtpCodeException("Code expired or invalid");
 
         if (!otp.matches(inputCode)) {
-            if (otp.registerFailure() >= MAX_ATTEMPTS) {
-                cache.evict(userId);
-            }
+            if (otp.registerFailure() >= MAX_ATTEMPTS) cache.evict(userId);
 
             throw new InvalidOtpCodeException("Code expired or invalid");
         }
