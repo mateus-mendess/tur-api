@@ -21,6 +21,9 @@ public interface TouristPointMapper {
     @Mapping(source = "averageRating", target = "averageRating")
     TouristPointResponse toResponse(TouristPoint touristPoint, Double averageRating);
 
+    @Mapping(source = "address.city", target = "city")
+    @Mapping(source = "address.state.name", target = "state")
+    @Mapping(source = "photos", target = "photoResponses")
     TouristPointSummaryResponse toSummaryResponse(TouristPoint touristPoint);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
