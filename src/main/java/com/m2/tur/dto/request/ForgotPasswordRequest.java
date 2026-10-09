@@ -11,6 +11,6 @@ public record ForgotPasswordRequest(
         String email
 ) {
         public  ForgotPasswordRequest {
-            email = email.trim().toLowerCase();
+                if (email != null) email = email.trim().toLowerCase();
         }
 }

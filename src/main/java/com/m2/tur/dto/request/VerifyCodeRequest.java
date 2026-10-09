@@ -14,6 +14,6 @@ public record VerifyCodeRequest(
         String code
 ) {
         public VerifyCodeRequest {
-                email = email.trim().toLowerCase();
+                if (email != null) email = email.trim().toLowerCase();
         }
 }

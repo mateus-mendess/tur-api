@@ -12,6 +12,6 @@ public record AuthenticationRequest(
         String password
 ) {
         public AuthenticationRequest {
-                email = email.trim().toLowerCase();
+                if (email != null) email = email.trim().toLowerCase();
         }
 }

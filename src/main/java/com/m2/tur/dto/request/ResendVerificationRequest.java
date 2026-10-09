@@ -11,6 +11,6 @@ public record ResendVerificationRequest(
         String email
 ) {
         public ResendVerificationRequest {
-                email = email.trim().toLowerCase();
+                if (email != null) email = email.trim().toLowerCase();
         }
 }
