@@ -50,7 +50,7 @@ public class PasswordService {
 
     public String verifyResetCode(VerifyCodeRequest request) {
         User user = userRepository.findByEmail(request.email())
-                        .orElseThrow(() -> new InvalidOtpCodeException("Invalid code"));
+                        .orElseThrow(() -> new InvalidOtpCodeException("Code expired or invalid"));
 
         otpService.verifyPasswordResetCode(user.getId(), request.code());
 
@@ -66,11 +66,13 @@ public class PasswordService {
         Cache cache = cacheManager.getCache("password-reset-token");
         String email = cache.get(request.token(), String.class);
 
+        if (email == null || !cache.evictIfPresent(request.token())) {
+            throw new InvalidOtpCodeException("Code expired or invalid");
+        }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
-
-        cache.evict(request.token());
     }
 }
