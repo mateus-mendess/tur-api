@@ -23,7 +23,7 @@ public record AddressRequest(
         String city,
 
         @Schema(description = "Brazilian zip code in the format XXXXX-XXX.", example = "57020-000")
-        @Size(min = 9, max = 9)
+        @Size(min = 8, max = 9)
         @NotBlank(message = "zipcode required.")
         @Pattern(regexp = "^\\d{5}-?\\d{3}$",
         message = "Invalid zipcode format.")

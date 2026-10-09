@@ -36,7 +36,7 @@ public class UserService {
     }
     private void validate(UserRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new EmailAlreadyExistsException("Email already exists.", "email");
+            throw new EmailAlreadyExistsException("email", "Email already exists.");
         }
     }
 

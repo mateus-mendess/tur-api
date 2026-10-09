@@ -74,14 +74,14 @@ public class FavoriteServiceTest {
     class FindMyFavorites {
         @Test
         void should_return_tourist_points_favorites_with_success() {
-            //Arrange
+            // Arrange
             Page<TouristPoint> page = new PageImpl<>(List.of(touristPoint), pageable, 10);
 
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
             when(touristPointRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
             when(touristPointMapper.toSummaryResponse(any(TouristPoint.class))).thenReturn(touristPointSummaryResponse);
 
-            //Act & Assert
+            // Act & Assert
             var result = favoriteService.findMyFavorites(filterRequest, pageable);
 
             verify(authService).getAuthenticatedUser();
@@ -91,11 +91,11 @@ public class FavoriteServiceTest {
 
         @Test
         void should_throw_unauthorized_exception_when_user_not_authenticated() {
-            //Arrange
+            // Arrange
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
-            //Act & Assert
-            assertThrows(UnauthorizedException.class, ()-> favoriteService.findMyFavorites(filterRequest, pageable));
+            // Act & Assert
+            assertThrows(UnauthorizedException.class, () -> favoriteService.findMyFavorites(filterRequest, pageable));
 
             verify(favoriteRepository, times(0)).findAll(any(Specification.class), any(Pageable.class));
         }
@@ -104,58 +104,49 @@ public class FavoriteServiceTest {
     @Nested
     class AddFavorite {
         @Test
-        void should_favorite_tourist_point_with_success() {
-            //Arrange
+        void should_add_favorite_tourist_point_with_success() {
+            // Arrange
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(favoriteRepository.existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class))).thenReturn(false);
             when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.of(touristPoint));
 
-            //Act & Assert
+            // Act & Assert
             favoriteService.addFavorite(touristPoint.getId());
 
-            verify(favoriteRepository).saveAndFlush(favoriteCaptor.capture());
-
-            var captured = favoriteCaptor.getValue();
-
-            assertNotNull(captured.getUser());
-            assertNotNull(captured.getTouristPoint());
+            verify(favoriteRepository).insertIgnore(any(UUID.class), any(UUID.class));
         }
 
         @Test
         void should_throw_unauthorized_exception_when_user_not_authenticated() {
-            //Arrange
+            // Arrange
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
-            //Act & Assert
-            assertThrows(UnauthorizedException.class, ()-> favoriteService.addFavorite(touristPoint.getId()));
+            // Act & Assert
+            assertThrows(UnauthorizedException.class, () -> favoriteService.addFavorite(touristPoint.getId()));
 
             verify(favoriteRepository, times(0)).saveAndFlush(any(Favorite.class));
         }
 
         @Test
         void should_return_without_error_when_tourist_point_is_already_favorite() {
-            //Arrange
+            // Arrange
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(favoriteRepository.existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class))).thenReturn(true);
 
-            //Act & Assert
+            // Act & Assert
             favoriteService.addFavorite(touristPoint.getId());
 
-            verify(favoriteRepository).existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class));
-            verify(favoriteRepository, times(0)).saveAndFlush(any(Favorite.class));
+            verify(favoriteRepository).insertIgnore(any(UUID.class), any(UUID.class));
         }
 
         @Test
         void should_throw_not_found_exception_when_tourist_point_not_found() {
-            //Arrange
+            // Arrange
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(UserFactory.createEntity()));
-            when(favoriteRepository.existsByUserIdAndTouristPointId(any(UUID.class), any(UUID.class))).thenReturn(false);
             when(touristPointRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-            //Act & Assert
+            // Act & Assert
             assertThrows(NotFoundException.class, () -> favoriteService.addFavorite(UUID.randomUUID()));
 
-            verify(favoriteRepository, times(0)).saveAndFlush(any(Favorite.class));
+            verify(favoriteRepository, times(0)).insertIgnore(any(UUID.class), any(UUID.class));
         }
     }
 
@@ -163,21 +154,22 @@ public class FavoriteServiceTest {
     class RemoveFavorite {
         @Test
         void should_remove_favorite_tourist_point_with_success() {
-            //Arrange
+            // Arrange
             when(authService.getAuthenticatedUser()).thenReturn(Optional.of(favorite.getUser()));
 
-            //Act & Assert
+            // Act & Assert
             favoriteService.removeFavorite(favorite.getTouristPoint().getId());
 
-            verify(favoriteRepository).deleteByUserIdAndTouristPointId(favorite.getUser().getId(), favorite.getTouristPoint().getId());
+            verify(favoriteRepository).deleteByUserIdAndTouristPointId(favorite.getUser().getId(),
+                    favorite.getTouristPoint().getId());
         }
 
         @Test
         void should_throw_unauthorized_exception_when_user_not_authenticated() {
-            //Arrange
+            // Arrange
             when(authService.getAuthenticatedUser()).thenReturn(Optional.empty());
 
-            //Act & Assert
+            // Act & Assert
             assertThrows(UnauthorizedException.class, () -> favoriteService.removeFavorite(touristPoint.getId()));
 
             verify(favoriteRepository, times(0)).deleteByUserIdAndTouristPointId(any(UUID.class), any(UUID.class));
