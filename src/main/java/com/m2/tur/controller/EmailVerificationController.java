@@ -37,6 +37,16 @@ public class EmailVerificationController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Resend email verification code", description = """
+            Resends a new verification code to the provided email address.
+            Use this endpoint when a user did not receive the initial email or if the previous code has expired.
+            For security purposes, this endpoint may return a successful response even if the email is not registered or
+            is already verified, to prevent email enumeration attacks.
+            """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Request processed"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     @PostMapping("/resend-verification")
     public ResponseEntity<Void> resendVerificationCode(@RequestBody @Valid ResendVerificationRequest request) {
         emailVerificationService.resendVerificationCode(request.email());
