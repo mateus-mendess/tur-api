@@ -4,6 +4,7 @@ import com.m2.tur.core.exception.EmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -15,6 +16,9 @@ import org.thymeleaf.context.Context;
 @RequiredArgsConstructor
 @Service
 public class EmailService {
+    @Value("${app.mail-from}")
+    private String mailFrom;
+
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
@@ -43,14 +47,14 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("noreply@tur.com");
+            helper.setFrom(mailFrom);
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
 
             mailSender.send(message);
         } catch (MessagingException | MailException e) {
-            throw new EmailException("Critical failure when attempting to send the verification email");
+            throw new EmailException("Failed to send email");
         }
     }
 }

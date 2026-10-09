@@ -1,6 +1,6 @@
 package com.m2.tur.service;
 
-import com.m2.tur.core.exception.NotFoundException;
+import com.m2.tur.core.exception.InvalidOtpCodeException;
 import com.m2.tur.dto.request.VerifyCodeRequest;
 import com.m2.tur.model.entity.User;
 import com.m2.tur.model.repository.UserRepository;
@@ -22,7 +22,7 @@ public class EmailVerificationService {
     @CacheEvict(cacheNames = "stats-cache")
     public void verifyEmail(VerifyCodeRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new InvalidOtpCodeException("Code expired or invalid"));
 
         otpService.verifyUserRegistrationCode(user.getId(), request.code());
 
