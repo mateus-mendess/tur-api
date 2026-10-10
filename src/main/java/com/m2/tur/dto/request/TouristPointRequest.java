@@ -14,7 +14,7 @@ public record TouristPointRequest(
         @NotBlank
         String name,
 
-        @Size(max = 300)
+        @Size(max = 1500)
         @NotBlank
         String description,
 

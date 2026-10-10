@@ -1,7 +1,7 @@
 package com.m2.tur.core.exception;
 
-public class InvalidCurrentPasswordException extends UnauthorizedException {
-    public InvalidCurrentPasswordException(String message) {
-        super(message);
+public class InvalidCurrentPasswordException extends BusinessException {
+    public InvalidCurrentPasswordException(String message, String field) {
+        super(message, field);
     }
 }

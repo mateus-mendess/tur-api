@@ -34,7 +34,7 @@ public class PasswordService {
                 .orElseThrow(() -> new UnauthorizedException("User not logged in"));
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new InvalidCurrentPasswordException("Current password is incorrect");
+            throw new InvalidCurrentPasswordException("currentPassword", "Current password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
